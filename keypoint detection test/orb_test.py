@@ -3,9 +3,9 @@ import numpy as np
 import cv2
 from matplotlib import pyplot as plt
 
-# img = cv2.imread('simple.jpg',0)
+img = cv2.imread('simple.jpg',0)
 # img = cv2.imread('test.png',0)
-img = cv2.imread('Atest.jpg',0)
+# img = cv2.imread('Atest.jpg',0)
 # img = cv2.imread('B.jpg',0)
 
 
