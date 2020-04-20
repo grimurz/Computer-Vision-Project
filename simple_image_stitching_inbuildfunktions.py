@@ -44,7 +44,7 @@ matches = []
 for m,n in raw:
     if m.distance < n.distance * 0.7:
         matches.append(m)
-# (ii) Find geometrically consistent feature matches using RANSAC to solve for the homography be- tween pairs of images
+# (ii) Find geometrically consistent feature matches using RANSAC to solve for the homography between pairs of images
 src_pts = np.float32([keypoints0[m.queryIdx].pt for m in matches]).reshape(-1, 1, 2)
 dst_pts = np.float32([keypoints1[m.trainIdx].pt for m in matches]).reshape(-1, 1, 2)
 
