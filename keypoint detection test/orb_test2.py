@@ -70,6 +70,7 @@ plt.imshow(result),plt.show()
 
 
 
+
 img_out1 = cv2.drawKeypoints(img1, kp1, outImage = None, color=(255,0,0))
 img_out2 = cv2.drawKeypoints(img2, kp2, outImage = None, color=(255,0,0))
 
@@ -78,12 +79,12 @@ plt.imshow(img_out2),plt.show()
 
 
 
-# matching_result = cv2.drawMatches(img1, kp1, img2, kp2, raw[:20], None, flags=2)
-matching_result = cv2.drawMatches(img1, kp1, img2, kp2, matches, None, flags=2)
+# # matching_result = cv2.drawMatches(img1, kp1, img2, kp2, raw[:20], None, flags=2)
+# matching_result = cv2.drawMatches(img1, kp1, img2, kp2, matches, None, flags=2)
 
-cv2.imshow("Close me by pressing the any key", matching_result)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+# cv2.imshow("Close me by pressing the any key", matching_result)
+# cv2.waitKey(0)
+# cv2.destroyAllWindows()
 
 
 
