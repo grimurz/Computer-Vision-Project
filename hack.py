@@ -72,17 +72,23 @@ def stitch(img1, img2):
     #h = images[0].shape[0] + images[1].shape[0]
     #w = images[0].shape[1] + images[1].shape[1]
     
-    h = 1500
-    w = 1500
+    h = 2000
+    w = 1100
     
     result = cv2.warpPerspective(img1, H, (w,h))
     result[0:img2.shape[0], 0:img2.shape[1]] = img2
     
     return result
     
+#res1 = stitch(images[0],images[1])
+#result = stitch(images[2],res1)
 
-res1 = stitch(images[0],images[1])
-result = stitch(images[2],res1)
+#res1 = stitch(images[2],images[0])
+#result = stitch(images[1],res1)
+
+res1 = stitch(images[2],images[0])
+result = stitch(res1,images[1])
+
 
 plt.figure
 plt.imshow(result)
