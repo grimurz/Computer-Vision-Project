@@ -3,6 +3,41 @@ import numpy as np
 import random
 import math
 import cv2
+from scipy.stats import bernoulli
+from scipy.stats import binom
+
+
+
+
+# =============================================================================
+# nf = 150
+# ni = 133
+# #nf = N - ni
+# 
+# p1 = 0.6
+# p0 = 0.1
+# 
+# p_f_m1 = binom.pmf(ni, nf, p1)
+# p_f_m0 = binom.pmf(ni, nf, p0)
+# 
+# p_m1 = 10**(-6)
+# p_m0 = ???????
+#
+# p_m1_f = 1/(1+(p_f_m0)*p_m0/(p_f_m1*p_m1))
+# 
+# p_min = 0.999
+# 
+# if p_m1_f > p_min:
+#     print("Valid match")
+# else:
+#     print("Invalid match")
+# 
+# alpha = 8.0
+# beta = 0.3
+# 
+# alpha + beta * nf
+# =============================================================================
+
 
 def getPointsFromHomogeneousCoor(q):
     
@@ -13,13 +48,6 @@ def getPointsFromHomogeneousCoor(q):
 
 
 def getHomography (points1, points2):
-    
-    # normalize input points
-    points1 = points1 - points1.mean()
-    points1 = points1 / points1.max()
-    
-    points2 = points2 - points2.mean()
-    points2 = points2 / points2.max()   
     
     B = []    
 # =============================================================================
@@ -119,30 +147,12 @@ def getRansacHomography(p_1, p_2):
                 continue
         # end loop
         # homographies
-        homographies.append((no_inliers, H))
+        homographies.append((no_inliers, H)) # evt change to just update H instead of saving all H
     
     # end loop
     # return H with lmaximum number of of inliers (max, H)
     return max(homographies,key=lambda item:item[0])
 
 
-# =============================================================================
-# ## TEST OF HOMOGRAPHY
-# # Our own function   
-# no_inliers, H1 = getRansacHomography(points1, points2)
-# 
-# for i in range (len(points2)):
-#     a = np.asarray(points2[i][0])
-#     b = np.ones(1)
-#     p1 = np.dot(H1,np.concatenate((a, b), axis=None).T)
-#     print(getPointsFromHomogeneousCoor(p1))
-# 
-# # The inbuild function from openCV
-# H2, mask = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, 5.0)
-# for i in range (len(dst_pts)):
-#     a = np.asarray(dst_pts[i][0])
-#     b = np.ones(1)
-#     print(np.dot(H2,np.concatenate((a, b), axis=None).T))
-# 
-# =============================================================================
+
 
