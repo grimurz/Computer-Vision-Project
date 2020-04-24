@@ -55,18 +55,16 @@ def euclidean_distance(row1, row2):
 
 def get_neighbors(train, test_row, query_idx, num_neighbors):
     distances = list()
-    dmatches = list()
     for i in range(0,len(train)):
         dist = euclidean_distance(test_row, train[i])
-        temp = cv2.DMatch(query_idx, i, dist)
         distances.append((i,dist))
-        dmatches.append(temp)
-    #print(len(distances))
+        #print(len(distances))
     distances.sort(key=lambda tup: tup[1])
     neighbors = list()
     for i in range(num_neighbors):
         (dmatch_idx, dist) = distances[i]
-        neighbors.append(dmatches[dmatch_idx])
+        temp = cv2.DMatch(query_idx, dmatch_idx, dist)
+        neighbors.append(temp)
     return neighbors
 
 
