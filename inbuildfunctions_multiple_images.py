@@ -103,13 +103,20 @@ for i in range(0,len(images)):
 
 
 # Output: Panoramic image(s)
-h = 500
-w = 500
+h = 900
+w = 900
+s = 250 # shift
 
 # for i in range(0,len(images)):
 for i in range(0,len(pairs)):
-    warpedImage = cv2.warpPerspective(images[pairs[i][0]], Hs[i], (w,h))
-    warpedImage[0:images[pairs[i][1]].shape[0], 0:images[pairs[i][1]].shape[1]] = images[pairs[i][1]]
+    
+    Hm = Hs[i]
+    Hm[0][2] += s
+    Hm[1][2] += s
+    
+    # warpedImage = cv2.warpPerspective(images[pairs[i][0]], Hs[i], (w,h))
+    warpedImage = cv2.warpPerspective(images[pairs[i][0]], Hm, (w,h))
+    warpedImage[0+s:images[pairs[i][1]].shape[0]+s, 0+s:images[pairs[i][1]].shape[1]+s] = images[pairs[i][1]]
     
     plt.figure(i)
     plt.title(str(pairs[i][0]+1) +' '+ str(pairs[i][1]+1))
