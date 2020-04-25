@@ -19,7 +19,7 @@ import matplotlib.pyplot as plt
 
 # Load images    
 images = []
-path = "testimages2"
+path = "testimages4"
 for f in os.listdir(path):
     ext = os.path.splitext(f)[1]
     if ext != ".png":
@@ -47,16 +47,14 @@ for i in range(0,len(images)):
 # II. Find k nearest-neighbours for each feature using a k-d tree
 knnmatcher = cv2.BFMatcher(cv2.NORM_L2, crossCheck = False)
 
-#raw = []
 pairs = []
 src_pts_list = []
 dst_pts_list = []
 Hs = []
 masks = []
-for i in range(0,len(images)):          # 1-2, 1-3, 2-3
+for i in range(0,len(images)):
     for j in range(i+1,len(images)):     
         raw = knnmatcher.knnMatch(descriptors[i], descriptors[j], 2)
-        #raw.append(raw_i)
         
         # III. For each image:
         # (i) Select m candidate matching images that have the most feature matches to this image
@@ -64,26 +62,32 @@ for i in range(0,len(images)):          # 1-2, 1-3, 2-3
         for m,n in raw:
             if m.distance < n.distance * 0.7:
                 matches.append(m)
+        
+        print(len(matches), 'beep',i+1,j+1)
+       
+        
+        if len(matches) > 60:   # <- needs re-evaluation later on
+        
+            # (ii) Find geometrically consistent feature matches using RANSAC to solve for the homography between pairs of images
+            src_pts = np.float32([keypoints[i][m.queryIdx].pt for m in matches]).reshape(-1, 1, 2)
+            dst_pts = np.float32([keypoints[j][m.trainIdx].pt for m in matches]).reshape(-1, 1, 2)
+            
+            H, mask = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, 5.0)
+            
+            if H is not None:   # <- sometimes somehow None even if matches > 0
+            
+                src_pts_list.append(src_pts)
+                dst_pts_list.append(dst_pts)
+                Hs.append(H)
+                masks.append(mask)
                 
-        # (ii) Find geometrically consistent feature matches using RANSAC to solve for the homography between pairs of images
-        src_pts = np.float32([keypoints[i][m.queryIdx].pt for m in matches]).reshape(-1, 1, 2)
-        dst_pts = np.float32([keypoints[j][m.trainIdx].pt for m in matches]).reshape(-1, 1, 2)
-        
-        H, mask = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, 5.0)
-        
-        src_pts_list.append(src_pts)
-        dst_pts_list.append(dst_pts)
-        Hs.append(H)
-        masks.append(mask)
-        
-        print('beep',i,j)
-        pairs.append((i,j))
-        
-        # matching_result = cv2.drawMatches(images[i], kp1, images[j], kp2, matches, None, flags=2)
-        
-        # cv2.imshow("Close me by pressing the any key", matching_result)
-        # cv2.waitKey(0)
-        # cv2.destroyAllWindows()
+                pairs.append((i,j))
+                
+                # matching_result = cv2.drawMatches(images[i], kp1, images[j], kp2, matches, None, flags=2)
+                
+                # cv2.imshow("Close me by pressing the any key", matching_result)
+                # cv2.waitKey(0)
+                # cv2.destroyAllWindows()
 
 
 # (iii) Verify imagematches using a probabilistic model
@@ -98,19 +102,27 @@ for i in range(0,len(images)):          # 1-2, 1-3, 2-3
 
 
 # Output: Panoramic image(s)
-h = 250
-w = 250
+h = 500
+w = 500
 
-for i in range(0,len(images)):
+# for i in range(0,len(images)):
+for i in range(0,len(pairs)):
     warpedImage = cv2.warpPerspective(images[pairs[i][0]], Hs[i], (w,h))
     warpedImage[0:images[pairs[i][1]].shape[0], 0:images[pairs[i][1]].shape[1]] = images[pairs[i][1]]
     
     plt.figure(i)
-    plt.title(pairs[i])
+    plt.title(str(pairs[i][0]+1) +' '+ str(pairs[i][1]+1))
     plt.imshow(warpedImage)
     plt.show
     
-
+    
+    '''
+        Only adjacent images considered
+    
+        1  2  3        
+        4  5  6
+        7  8  9
+    '''
 
 # # 1 onto 2 ?
 # warpedImage = cv2.warpPerspective(images[0], Hs[0], (w,h))
