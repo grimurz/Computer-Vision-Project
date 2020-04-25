@@ -63,7 +63,7 @@ for i in range(0,len(images)):
             if m.distance < n.distance * 0.7:
                 matches.append(m)
         
-        print(len(matches), 'beep',i+1,j+1)
+        print(i+1,j+1, 'beep', len(matches))
        
         
         if len(matches) > 60:   # <- needs re-evaluation later on
