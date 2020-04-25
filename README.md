@@ -23,3 +23,5 @@ https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_feature2
 https://pysource.com/2018/03/23/feature-matching-brute-force-opencv-3-4-with-python-3-tutorial-26/
 
 https://github.com/rmislam/PythonSIFT
+
+https://stackoverflow.com/a/24564574/2083242
