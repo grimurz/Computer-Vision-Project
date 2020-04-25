@@ -81,13 +81,9 @@ for i in range(0,len(images)):
                 Hs.append(H)
                 masks.append(mask)
                 
-                pairs.append((i,j))
+                pairs.append((i,j,len(matches)))
                 
-                # matching_result = cv2.drawMatches(images[i], kp1, images[j], kp2, matches, None, flags=2)
-                
-                # cv2.imshow("Close me by pressing the any key", matching_result)
-                # cv2.waitKey(0)
-                # cv2.destroyAllWindows()
+
 
 
 # (iii) Verify imagematches using a probabilistic model
@@ -96,9 +92,14 @@ for i in range(0,len(images)):
 
 # IV. Find connected components of image matches
 
+
+
 # V. For each connected component:
     # (i) Perform bundle adjustment to solve for the rotation θ1, θ2, θ3 and focal length f of all cameras
     # (ii) Render panorama using multi-band blending
+
+
+
 
 
 # Output: Panoramic image(s)
@@ -115,41 +116,25 @@ for i in range(0,len(pairs)):
     plt.imshow(warpedImage)
     plt.show
     
-    
-    '''
-        Only adjacent images considered
-    
-        1  2  3        
-        4  5  6
-        7  8  9
-    '''
-
-# # 1 onto 2 ?
-# warpedImage = cv2.warpPerspective(images[0], Hs[0], (w,h))
-# warpedImage[0+2:images[1].shape[0]+2, 0+2:images[1].shape[1]+2] = images[1]
-# # warpedImage[0:images[1].shape[0], 0:images[1].shape[1]] = images[1]
-
-# plt.figure(1)
-# plt.imshow(warpedImage)
-# plt.show
 
 
-# # 1 onto 3 ?
-# warpedImage = cv2.warpPerspective(images[0], Hs[1], (w,h))
-# warpedImage[0+2:images[2].shape[0]+2, 0+2:images[2].shape[1]+2] = images[2]
-# # warpedImage[0:images[2].shape[0], 0:images[2].shape[1]] = images[2]
-
-# plt.figure(3)
-# plt.imshow(warpedImage)
-# plt.show
 
 
-# # 2 onto 3 ?
-# warpedImage = cv2.warpPerspective(images[1], Hs[2], (w,h))
-# warpedImage[0+5:images[2].shape[0]+5, 0+5:images[2].shape[1]+5] = images[2]
-# # warpedImage[0:images[2].shape[0], 0:images[2].shape[1]] = images[2]
 
-# plt.figure(2)
-# plt.imshow(warpedImage)
-# plt.show
+
+
+##### Testing https://stackoverflow.com/a/24564574/2083242 #####
+
+# Initial homographies (one for each image)
+id_m = np.identity(3)
+H_init = np.repeat(id_m[:, :, np.newaxis], len(images), axis=2)
+
+# Randomly select image (Well Yes, But Actually No)
+im_no_init = 6 #np.random.randint(len(images))
+
+# Find homography indexes corresponding to image
+H_id = []
+for i, p in enumerate(pairs):
+    if p[0] == im_no_init or p[1] == im_no_init:
+        H_id.append(i)
 
