@@ -8,11 +8,10 @@ from scipy.stats import binom
 
 
 
-
 # =============================================================================
+# 
 # nf = 150
 # ni = 133
-# #nf = N - ni
 # 
 # p1 = 0.6
 # p0 = 0.1
@@ -21,13 +20,13 @@ from scipy.stats import binom
 # p_f_m0 = binom.pmf(ni, nf, p0)
 # 
 # p_m1 = 10**(-6)
-# p_m0 = ???????
-#
-# p_m1_f = 1/(1+(p_f_m0)*p_m0/(p_f_m1*p_m1))
+# p_m0 = 1-p_m1
+# 
+# p_m1_f = (p_f_m1)*p_m1/(p_f_m0*p_m0)
 # 
 # p_min = 0.999
 # 
-# if p_m1_f > p_min:
+# if p_m1_f > 1/((1/p_min)-1):
 #     print("Valid match")
 # else:
 #     print("Invalid match")
@@ -35,7 +34,7 @@ from scipy.stats import binom
 # alpha = 8.0
 # beta = 0.3
 # 
-# alpha + beta * nf
+# ni > alpha + beta * nf
 # =============================================================================
 
 
