@@ -136,10 +136,16 @@ for img in range(0, imageCount):
         # (ii) Find geometrically consistent feature matches using RANSAC to solve for the homography between pairs of images
         src_pts = np.float32([keypoints[img][m['featureIdx']].pt for m in matches]).reshape(-1, 1, 2)
         dst_pts = np.float32([keypoints[imgMatch][m['matchIdx']].pt for m in matches]).reshape(-1, 1, 2)
+
+        if len(matches) > 0:
         
-        H, mask = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, 5.0)
-        
-        print("img, imgMatch: ", img, imgMatch, '\n', H, '\n')
+            H, mask = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, 5.0)
+            
+            print("img, imgMatch: ", img, imgMatch, '\n', H, '\n')
+            
+        else:
+            print('No matches for', img, imgMatch)
+            
 
 # (iii) Verify imagematches using a probabilistic model
 
