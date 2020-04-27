@@ -25,10 +25,12 @@ import matplotlib.pyplot as plt
 from math import sqrt
 from sklearn.neighbors import KDTree
 
+np.set_printoptions(suppress=True)
+
 images = []
-path = "testimages2"
+# path = "testimages2"
 #path = "testimages3"
-#path = "testimages4"
+path = "testimages4"
 for f in os.listdir(path):
     ext = os.path.splitext(f)[1]
     if ext != ".png":
@@ -112,7 +114,7 @@ print("Best matching done")
 
 # (i) Select m candidate matching images that have the most feature matches to this image
 for img in range(0, imageCount):
-    print("Second-loop -matching img ", img)
+    print("\nSecond-loop -matching img ", img)
     for imgMatch in bestMatchList[img]:
         if img == imgMatch:
             continue
@@ -137,7 +139,7 @@ for img in range(0, imageCount):
         
         H, mask = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, 5.0)
         
-        print("img, imgMatch: ", img, imgMatch, H)
+        print("img, imgMatch: ", img, imgMatch, '\n', H, '\n')
 
 # (iii) Verify imagematches using a probabilistic model
 
