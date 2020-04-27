@@ -112,8 +112,13 @@ for img in range(0, imageCount):
 print("Best matching done")
 # III. For each image:
 
+H_all = []
+
 # (i) Select m candidate matching images that have the most feature matches to this image
 for img in range(0, imageCount):
+    
+    H_temp = []
+    
     print("\nSecond-loop -matching img ", img)
     for imgMatch in bestMatchList[img]:
         if img == imgMatch:
@@ -140,12 +145,15 @@ for img in range(0, imageCount):
         if len(matches) > 0:
         
             H, mask = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, 5.0)
-            
             print("img, imgMatch: ", img, imgMatch, '\n', H, '\n')
             
         else:
             print('No matches for', img, imgMatch)
+            H = None
             
+        H_temp.append(H)
+
+    H_all.append(H_temp)
 
 # (iii) Verify imagematches using a probabilistic model
 
@@ -158,16 +166,36 @@ for img in range(0, imageCount):
     # (ii) Render panorama using multi-band blending
 
 
+
+
+#%%
+
 # Output: Panoramic image(s)
-#h = 250
-#w = 250
+h = 900
+w = 900
+s = 250 # shift
 
-#result = cv2.warpPerspective(images[0], H, (w,h))
-#result[0:images[1].shape[0], 0:images[1].shape[1]] = images[1]
+for i in range(len(images)):
 
-#plt.figure
-#plt.imshow(result)
-#plt.show
-
-
+    for j, m in enumerate(bestMatchList[i]):
+        
+        Hm = H_all[i][j]
+        
+        if Hm is not None:
+            Hm[0][2] += s
+            Hm[1][2] += s
+        
+            warpedImage = cv2.warpPerspective(images[i], Hm, (w,h))
+            warpedImage[0+s:images[m].shape[0]+s, 0+s:images[m].shape[1]+s] = images[m]
+            
+            plt.figure()
+            plt.title(str(i+1) +' '+ str(m+1) + ' ('+ str(i) +' '+ str(m) + ')' )
+            plt.imshow(warpedImage)
+            plt.show
+    
+'''
+    1  2  3
+    4  5  6
+    7  8  9
+'''
 
