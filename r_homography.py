@@ -94,7 +94,7 @@ def getHomography (points1, points2):
     return H
 
 
-def getRansacHomography(p_1, p_2):
+def getRansacHomography(p_1, p_2, valid_error):
     
     # because of wierd output from cv-function..
     points1 = []
@@ -108,36 +108,39 @@ def getRansacHomography(p_1, p_2):
     n = 500
     r = 4
     
-    valid_error = 150 # ? pixels ?
     homographies = []
+    points = list(zip(points1, points2))
     
     for i in range (n):
         # select four random point pairs of input points
-        points = list(zip(points1, points2))  
         points = random.sample(points, r) 
-        print(points)
         p1, p2 = zip(*points)
         p1 = np.asarray(p1)
         p2 = np.asarray(p2)
-        points2 = np.asarray(points2)
+        
     
         # compute homography of the four random selected points
         H = (getHomography(p1, p2))
                 
         # add 1's to get the points as homogeneous coordinates 
-        q2 = np.concatenate((points2,np.ones((points2.shape[0],1))),1)
+        points1 = np.asarray(points1)
+        q1 = np.concatenate((points1,np.ones((points1.shape[0],1))),1)
+
+    
     
         # for each homography compute the number of inliers according to the 
         # maximum valid error 
+                
         no_inliers = 0
-        for i in range (len(points2)):
-            # estimation of q1_i from H.q2_i
-            e_p1 = np.dot(H,q2[i].T) 
-            e_p1 = getPointsFromHomogeneousCoor(e_p1)
+        for j in range (len(points2)):
 
-            # distance between estimated p1 and original p1 
-            distance = math.sqrt(((points1[i][0]-e_p1[0])**2)+((points1[i][1]-e_p1[1])**2))    
-            #print(distance)
+            # estimation of q2_i from H.q1_i
+            e_p2 = np.dot(H,q1[j]) 
+            e_p2 = getPointsFromHomogeneousCoor(e_p2)
+
+            # distance between estimated p2 and original p2 
+            distance = math.sqrt(((points2[j][0]-e_p2[0])**2)+((points2[j][1]-e_p2[1])**2))
+            # print(distance)
             
             # if distance between e_p1 and p1 is less than the valid error
             # we count the point as an inlier 
@@ -147,11 +150,12 @@ def getRansacHomography(p_1, p_2):
                 continue
         # end loop
         # homographies
-        homographies.append((no_inliers, H)) # evt change to just update H instead of saving all H
+        homographies.append((H, no_inliers)) # evt change to just update H instead of saving all H
+    
     
     # end loop
     # return H with lmaximum number of of inliers (max, H)
-    return max(homographies,key=lambda item:item[0])
+    return max(homographies,key=lambda item:item[1])
 
 
 
