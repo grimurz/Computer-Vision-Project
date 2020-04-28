@@ -31,27 +31,31 @@ def warpImageBasic(image, H, h, w):
 
 
 
-
-
 def warpImage(image, H, h, w):
     
     H_inv = np.linalg.inv(H) 
     
-    x = []
-    y = []
-    for j in range (h): # rows
-        for i in range (w): # col
-            q = np.dot(H_inv,[i,j,1])
-            p = getPointsFromHomogeneousCoor(q)
-            x.append(int(np.round(p[0])))
-            y.append(int(np.round(p[1])))
-
-    x = np.asarray(x)
-    y = np.asarray(y)
+    x = np.arange(1,w+1)
+    y = np.arange(1,h+1)
+    xv, yv = np.meshgrid(x, y)
+    xv = xv.flatten('C')
+    yv = yv.flatten('C')
+    zv = np.ones(len(xv))
+       
+    qi = np.vstack((xv,yv,zv))
+    q = np.dot(H_inv,qi[0:len(xv), :])
+    p = getPointsFromHomogeneousCoor(q[0:len(xv), :])
     
+    x = p[0].astype(int)
+    y = p[1].astype(int)
     x = x.reshape(h, w).astype(np.float32)
     y = y.reshape(h, w).astype(np.float32)
     
     out = cv2.remap(image, x, y, cv2.INTER_LINEAR)
                               
     return out
+
+
+
+
+
