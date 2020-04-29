@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 #include <opencv2/core/types.hpp>
 """
 Simple image stitcing
 
-Can stitch multiple images together into one image in 2D.
+Can stitch two images together into one image in 2D.
 
 Self-implemented KNN-part (part 2 in paper)
 
@@ -64,7 +66,7 @@ for f in os.listdir(path):
     if ext != ".png":
         continue
 
-    print("[INFO] Loading ", f)
+    print("Loading ", f)
     images.append(cv2.imread(os.path.join(path,f)))
 
 imageCount = len(images)
@@ -82,7 +84,7 @@ for i in range(0, imageCount):
     k, d = sift_values.detectAndCompute(images[i], None)
     keypoints.append(k); descriptors.append(d)
 
-print("[INFO] SIFT done")
+print("SIFT done")
 
 # II. Find k nearest-neighbours for each feature using a k-d tree
 #knnmatcher = cv2.BFMatcher(cv2.NORM_L2, crossCheck = False)
@@ -141,7 +143,7 @@ for img in range(0, imageCount):
     bestMatchCountList.append(bestMatchingImagesCount)
 
 
-print("[INFO] Best matching done")
+print("Best matching done")
 # III. For each image:
 
 H_all = []
@@ -151,7 +153,7 @@ for img in range(0, imageCount):
     
     H_temp = []
     
-    print("\n Second-loop -matching img ", img)
+    print("\nSecond-loop -matching img ", img)
     for imgMatch in bestMatchList[img]:
         if img == imgMatch:
             continue
@@ -177,9 +179,7 @@ for img in range(0, imageCount):
         if len(matches) > 0:
         
             H, mask = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, 5.0)
-            #print("img, imgMatch: ", img, imgMatch, '\n', H, '\n')
-            print("img, imgMatch: ", img, imgMatch)
-            
+            print("img, imgMatch: ", img, imgMatch, '\n', H, '\n')
             no_inliers = np.sum(mask) 
         else:
             print('No matches for', img, imgMatch)
@@ -194,9 +194,15 @@ for img in range(0, imageCount):
         else:
             print("Not validated match for img, imgMatch: ", img, imgMatch)
             H_temp.append(None)
-            #continue  
+            #continue
+        
+        
         
     H_all.append(H_temp)
+
+
+
+
 
 # IV. Find connected components of image matches
 
@@ -217,7 +223,7 @@ H_f = np.repeat(id_m[:, :, np.newaxis], len(images), axis=2)
 im_done = [False] * len(images)
  
 # Randomly select first image
-im_no = np.random.randint(len(images))
+im_no = 0 # np.random.randint(len(images))
 
 anchor = images[im_no]
 
@@ -292,27 +298,14 @@ for i in range(len(images)):
             warpedImage[0+s:images[m].shape[0]+s, 0+s:images[m].shape[1]+s] = images[m]
             
             plt.figure()
-            plt.title(str(i) +' '+ str(m))
+            plt.title(str(i+1) +' '+ str(m+1) + ' ('+ str(i) +' '+ str(m) + ')' )
             plt.imshow(warpedImage)
             plt.show
   
 '''
-    1  2  3     0  1  2
-    4  5  6     3  4  5
-    7  8  9     6  7  8
-    
-Images loaded: 02,06,09,07,03,05,01,04,08
-               0 ,1, 2, 3, 4, 5, 6, 7, 8
-Wanted matches: 
-    0-6, 0-7, 0-5 => also get 04
-    1-4, 1-5, 1-2 => also get 1-8
-    2-1, 2-8      => also get 2-5 (2-3 removed)
-    3-7, 3-8      => also get 3-5 (3-2 removed)
-    4-0, 4-1      => also get 4-5 (4-2 not match)
-    5-0, 5-7, 5-1, 5-8 => does not get 5-0, but 5-2 instead
-    6-0, 6-7      => also get 6-5 (6-1 removed)
-    7-6, 7-5, 7-3 => also get 7-8
-    8-3, 8-5, 8-2 => also get 8-7
+    1  2  3
+    4  5  6
+    7  8  9
 '''
 
 
@@ -339,8 +332,8 @@ for i in range(H_f.shape[2]):
         max_y = y
 
 # Init canvas
-c_w = int(abs(min_x) + max_x + anchor.shape[1]*1.2)
-c_h = int(abs(min_y) + max_y + anchor.shape[0]*1.2)
+c_w = int(abs(min_x) + max_x + anchor.shape[1]*1.0)
+c_h = int(abs(min_y) + max_y + anchor.shape[0]*1.0)
 
 x_pad = int(abs(min_x))
 y_pad = int(abs(min_y))
