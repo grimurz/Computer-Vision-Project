@@ -73,6 +73,7 @@ dst_pts = np.float32([keypoints1[m.trainIdx].pt for m in matches]).reshape(-1, 1
 
 # Our own function   
 H1, no_inliers = getRansacHomography(src_pts, dst_pts, 5.0)
+print(H1)
 
 # The inbuild function from openCV
 H2, mask = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, 5.0)
@@ -142,9 +143,6 @@ showImage(result2, 8, 8)
 
 # ================ TEST OF WARPING PERSPECTIVE FUNCTION =======================
 
-h = 800
-w = 800
-
 # Simple forward mapping - just used for test (and basic starting point)
 warped_image1 = warpImageBasic(image1, H1, 800,800)
 warped_image1[0:image2.shape[0], 0:image2.shape[1]] = image2
@@ -159,3 +157,10 @@ showImage(warped_image2, 8, 8)
 result4 = cv2.warpPerspective(image1, H2, (800,800))
 result4[0:image2.shape[0], 0:image2.shape[1]] = image2
 showImage(result4, 8, 8)
+
+
+
+
+
+
+

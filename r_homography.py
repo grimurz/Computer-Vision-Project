@@ -1,42 +1,7 @@
-
 import numpy as np
 import random
 import math
-import cv2
-from scipy.stats import bernoulli
 from scipy.stats import binom
-
-
-
-# =============================================================================
-# 
-# nf = 150
-# ni = 133
-# 
-# p1 = 0.6
-# p0 = 0.1
-# 
-# p_f_m1 = binom.pmf(ni, nf, p1)
-# p_f_m0 = binom.pmf(ni, nf, p0)
-# 
-# p_m1 = 10**(-6)
-# p_m0 = 1-p_m1
-# 
-# p_m1_f = (p_f_m1)*p_m1/(p_f_m0*p_m0)
-# 
-# p_min = 0.999
-# 
-# if p_m1_f > 1/((1/p_min)-1):
-#     print("Valid match")
-# else:
-#     print("Invalid match")
-# 
-# alpha = 8.0
-# beta = 0.3
-# 
-# ni > alpha + beta * nf
-# =============================================================================
-
 
 def getPointsFromHomogeneousCoor(q):
     
@@ -45,7 +10,26 @@ def getPointsFromHomogeneousCoor(q):
     
     return q[0:2]
 
-
+def isValidMatch(nf, ni):
+    
+    p1 = 0.6
+    p0 = 0.1
+    
+    p_f_m1 = binom.pmf(ni, nf, p1)
+    p_f_m0 = binom.pmf(ni, nf, p0)
+    
+    p_m1 = 10**(-6)
+    p_m0 = 1-p_m1   #is this correct???
+    
+    p_m1_f = (p_f_m1*p_m1)/(p_f_m0*p_m0)
+    
+    p_min = 0.999
+    
+    if p_m1_f > (1/((1/p_min)-1)):
+        return True
+    else:
+        return False
+    
 def getHomography (points1, points2):
     
     B = []    
@@ -98,14 +82,14 @@ def getRansacHomography(p_1, p_2, valid_error):
     # because of wierd output from cv-function..
     points1 = []
     points2 = []
-    
     for i in range (len(p_1)):
         points1.append(p_1[i][0])
         points2.append(p_2[i][0])
         
-    # numbers from the paper
-    n = 500
-    r = 4
+    # constants from the paper
+    n = 1000    # should be 500, but chanced to 1000 to get better fit 
+    r = 8       # should be 4, but changed to 8 to get better fit
+                # maybe these should just be tuned  at the end?
     
     homographies = []
     points = list(zip(points1, points2))
@@ -117,7 +101,6 @@ def getRansacHomography(p_1, p_2, valid_error):
         p1 = np.asarray(p1)
         p2 = np.asarray(p2)
         
-    
         # compute homography of the four random selected points
         H = (getHomography(p1, p2))
                 
@@ -125,11 +108,8 @@ def getRansacHomography(p_1, p_2, valid_error):
         points1 = np.asarray(points1)
         q1 = np.concatenate((points1,np.ones((points1.shape[0],1))),1)
 
-    
-    
         # for each homography compute the number of inliers according to the 
         # maximum valid error 
-                
         no_inliers = 0
         for j in range (len(points2)):
 
@@ -139,7 +119,6 @@ def getRansacHomography(p_1, p_2, valid_error):
 
             # distance between estimated p2 and original p2 
             distance = math.sqrt(((points2[j][0]-e_p2[0])**2)+((points2[j][1]-e_p2[1])**2))
-            # print(distance)
             
             # if distance between e_p1 and p1 is less than the valid error
             # we count the point as an inlier 
@@ -147,14 +126,22 @@ def getRansacHomography(p_1, p_2, valid_error):
                 no_inliers += 1
             else:
                 continue
-        # end loop
-        # homographies
-        homographies.append((H, no_inliers)) # evt change to just update H instead of saving all H
+        # end inner loop
+        # check if match is valid - if true add to homographies
+        if isValidMatch(len(points1), no_inliers):
+            homographies.append((H, no_inliers))
+        else:
+            #print("NOT v match")
+            continue
     
+    # end outer loop
+    # if homographies is empty, return the empty list and 0 inliers 
+    if len(homographies) == 0:
+        return [], 0
+    else:    
+        # else return homographies with maximum number of of inliers (H, max)
+        return max(homographies,key=lambda item:item[1])
     
-    # end loop
-    # return H with lmaximum number of of inliers (max, H)
-    return max(homographies,key=lambda item:item[1])
 
 
 
