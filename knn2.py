@@ -211,9 +211,7 @@ h = 700
 w = 700
 s = 250 # shift
 
-Hm = H_all[2][3]
-        
-    
+ 
 
 for i in range(len(images)):
 
