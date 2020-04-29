@@ -23,9 +23,34 @@ cv2.ocl.setUseOpenCL(False)
 import matplotlib.pyplot as plt
 
 from math import sqrt
+from scipy.stats import binom
 from sklearn.neighbors import KDTree
 
 np.set_printoptions(suppress=True)
+
+
+def isValidMatch(nf, ni):
+    
+    p1 = 0.6
+    p0 = 0.1
+    
+    p_f_m1 = binom.pmf(ni, nf, p1)
+    p_f_m0 = binom.pmf(ni, nf, p0)
+    
+    p_m1 = 10**(-6)
+    p_m0 = 1-p_m1   #is this correct???
+    
+    p_m1_f = (p_f_m1*p_m1)/(p_f_m0*p_m0)
+    
+    p_min = 0.999
+    
+    if p_m1_f > (1/((1/p_min)-1)):
+        return True
+    else:
+        return False
+
+
+
 
 images = []
 # path = "testimages2"
@@ -146,16 +171,27 @@ for img in range(0, imageCount):
         
             H, mask = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, 5.0)
             print("img, imgMatch: ", img, imgMatch, '\n', H, '\n')
-            
+            no_inliers = np.sum(mask) 
         else:
             print('No matches for', img, imgMatch)
             H = None
-            
-        H_temp.append(H)
-
+            no_inliers = 0
+       
+        # (iii) Verify imagematches using a probabilistic model
+        
+        if isValidMatch(len(src_pts), no_inliers):
+            print("Validated match for img, imgMatch: ", img, imgMatch)
+            H_temp.append(H)
+        else:
+            print("Not validated match for img, imgMatch: ", img, imgMatch)
+            H_temp.append(None)
+            #continue
+        
+        
+        
     H_all.append(H_temp)
 
-# (iii) Verify imagematches using a probabilistic model
+
 
 
 
@@ -171,9 +207,13 @@ for img in range(0, imageCount):
 #%%
 
 # Output: Panoramic image(s)
-h = 900
-w = 900
+h = 700
+w = 700
 s = 250 # shift
+
+Hm = H_all[2][3]
+        
+    
 
 for i in range(len(images)):
 
@@ -192,7 +232,7 @@ for i in range(len(images)):
             plt.title(str(i+1) +' '+ str(m+1) + ' ('+ str(i) +' '+ str(m) + ')' )
             plt.imshow(warpedImage)
             plt.show
-    
+  
 '''
     1  2  3
     4  5  6
