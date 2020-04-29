@@ -26,17 +26,16 @@ from warp import warpImageBasic, warpImage
 # read images from path
 # chance path and extention according to the images and type of images you want to test 
 images = []
-path = "testimages1"
+path = "testimages6"
 
 for f in os.listdir(path):
     ext = os.path.splitext(f)[1]
-    # if ext != ".png":
-    if ext != ".JPG":
+    if ext != ".png":
         continue
     images.append(cv2.imread(os.path.join(path,f)))
     
-image1 = images[1]
-image2 = images[0]
+image1 = images[0]
+image2 = images[1]
 
 def showImage(im, h, w):
     plt.figure(figsize = (h,w))
@@ -44,15 +43,17 @@ def showImage(im, h, w):
     plt.show 
 
 # =============================================================================
-"""
-if images are LARGE then rescale to make a quicker test
-- used for the drone images 
-"""
-
-image1 = util.img_as_ubyte(transform.rescale(image1, 0.25))
-image2 = util.img_as_ubyte(transform.rescale(image2, 0.25))
-
-showImage(image1, 8, 8)
+# =============================================================================
+# """
+# if images are LARGE then rescale to make a quicker test
+# - used for the drone images 
+# """
+# 
+# image1 = util.img_as_ubyte(transform.rescale(image1, 0.25))
+# image2 = util.img_as_ubyte(transform.rescale(image2, 0.25))
+# 
+# showImage(image1, 8, 8)
+# =============================================================================
 
 # =============================================================================
 # find initial point coorespondences - since this is in the test phase, we just 
@@ -89,8 +90,8 @@ for i in range (len(dst_pts)):
     print(np.round(p1[0],2), np.round(p2[0],2),"\t", np.round(p1[1],2), np.round(p2[1],2))
     
     
-h = 2000
-w = 2000
+h = 300
+w = 300
 
 # Shows the results of the two different homographies 
 result1 = cv2.warpPerspective(image1, H1, (w,h))
@@ -98,7 +99,7 @@ result1[0:image2.shape[0], 0:image2.shape[1]] = image2
 showImage(result1, 8, 8)
 
 result2 = cv2.warpPerspective(image1, H2, (w,h))
-result2[0:image2.shape[0], 0:image2.shape[1]] = image2
+#result2[0:image2.shape[0], 0:image2.shape[1]] = image2
 showImage(result2, 8, 8)
 
 # =============================================================================
@@ -144,10 +145,12 @@ showImage(result2, 8, 8)
 
 # ================ TEST OF WARPING PERSPECTIVE FUNCTION =======================
 
-# Simple forward mapping - just used for test (and basic starting point)
-warped_image1 = warpImageBasic(image1, H1, h,w)
-warped_image1[0:image2.shape[0], 0:image2.shape[1]] = image2
-showImage(warped_image1, 8, 8)
+# =============================================================================
+# # Simple forward mapping - just used for test (and basic starting point)
+# warped_image1 = warpImageBasic(image1, H1, h,w)
+# warped_image1[0:image2.shape[0], 0:image2.shape[1]] = image2
+# showImage(warped_image1, 8, 8)
+# =============================================================================
 
 # Our own warping function - backward mapping
 warped_image2 = warpImage(image1, H1, h,w)
@@ -160,7 +163,7 @@ result4[0:image2.shape[0], 0:image2.shape[1]] = image2
 showImage(result4, 8, 8)
 
 
-
+#blender = cv2.detail_MultiBandBlender()
 
 
 
