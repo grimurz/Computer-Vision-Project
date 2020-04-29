@@ -30,6 +30,7 @@ path = "testimages1"
 
 for f in os.listdir(path):
     ext = os.path.splitext(f)[1]
+    # if ext != ".png":
     if ext != ".JPG":
         continue
     images.append(cv2.imread(os.path.join(path,f)))

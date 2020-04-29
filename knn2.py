@@ -55,7 +55,7 @@ def isValidMatch(nf, ni):
 images = []
 # path = "testimages2"
 #path = "testimages3"
-path = "testimages4"
+path = "testimages5"
 for f in os.listdir(path):
     ext = os.path.splitext(f)[1]
     if ext != ".png":
@@ -104,6 +104,7 @@ tree = KDTree(allDescriptors)
 
 # Iterate over images
 bestMatchList = []
+bestMatchCountList = []
 for img in range(0, imageCount):
     print("Best-matching img ", img)
     bestMatchCount = [ 0 ] * imageCount
@@ -121,6 +122,7 @@ for img in range(0, imageCount):
 
     # Find the 4 best matching images for current image
     bestMatchingImages = []
+    bestMatchingImagesCount = []
     for i in range(0, 4):
         bestMatch = np.argmax(bestMatchCount)
         
@@ -128,10 +130,12 @@ for img in range(0, imageCount):
             break
 
         bestMatchingImages.append(bestMatch)
+        bestMatchingImagesCount.append(bestMatchCount[bestMatch])
         print("  adding ", bestMatch, bestMatchCount[bestMatch])
         bestMatchCount[bestMatch] = -1
 
     bestMatchList.append(bestMatchingImages)
+    bestMatchCountList.append(bestMatchingImagesCount)
 
 
 print("Best matching done")
@@ -202,6 +206,66 @@ for img in range(0, imageCount):
     # (ii) Render panorama using multi-band blending
 
 
+#%%
+##### Testing https://stackoverflow.com/a/24564574/2083242 #####
+# https://stackoverflow.com/questions/42396860/inverse-homography
+
+# Final image homographies initialized (one for each image)
+id_m = np.identity(3)
+H_f = np.repeat(id_m[:, :, np.newaxis], len(images), axis=2)
+
+# Keep track of which images are done
+im_done = [False] * len(images)
+ 
+# Randomly select first image (Well Yes, But Actually No)
+im_no = 1 #np.random.randint(len(images))
+
+im_done[im_no] = True
+
+
+sn, sn_m = 0, 10 # 1000
+while False in im_done and sn < sn_m:
+    
+    # Get all done images
+    im_all_done = np.where(im_done)[0]
+    
+    # Find a done image with most matches with a non-done image
+    max_matches = 0
+    
+    for i in im_all_done:
+        for j, m in enumerate(bestMatchList[i]):
+            if im_done[m] is False and bestMatchCountList[m][j] > max_matches:
+                max_matches = bestMatchCountList[m][j]
+                im_no = i
+    
+    # Use image to find homography
+    
+    
+    # Get best matched image
+    H_inv = None
+    for i, m in enumerate(bestMatchList[im_no]):
+
+        if im_done[m] is False and im_no in bestMatchList[m]:
+            
+            # H_temp = H_all[im_no][i]
+            H_inv = H_all[m][ bestMatchList[m].index(im_no) ] # inverted H -> Hij becomes Hji
+            
+            im_done[m] = True
+            break
+    
+    if H_inv is not None:
+        H_f[:,:,m] = H_f[:,:,im_no].dot(H_inv)
+        
+        print(H_inv)
+  
+    
+    sn += 1 # safety net 
+
+
+if sn == 10:
+    print('Shit\'s F-ed, yo!')
+else:
+    print('I AM COMPLETE!!!')
 
 
 #%%
