@@ -262,10 +262,21 @@ while False in im_done and sn < sn_m:
     sn += 1 # safety net 
 
 
-if sn == 10:
+if sn == sn_m:
     print('Shit\'s F-ed, yo!')
 else:
     print('I AM COMPLETE!!!')
+
+#%%
+
+
+
+
+
+
+
+
+
 
 
 #%%
