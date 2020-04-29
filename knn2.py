@@ -54,8 +54,8 @@ def isValidMatch(nf, ni):
 
 images = []
 # path = "testimages2"
-#path = "testimages3"
-path = "testimages5"
+#path = "testimages5"
+path = "testimages4"
 for f in os.listdir(path):
     ext = os.path.splitext(f)[1]
     if ext != ".png":
@@ -223,7 +223,7 @@ im_no = 1 #np.random.randint(len(images))
 im_done[im_no] = True
 
 
-sn, sn_m = 0, 10 # 1000
+sn, sn_m = 0, 1000
 while False in im_done and sn < sn_m:
     
     # Get all done images
