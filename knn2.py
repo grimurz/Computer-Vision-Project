@@ -217,8 +217,8 @@ H_f = np.repeat(id_m[:, :, np.newaxis], len(images), axis=2)
 # Keep track of which images are done
 im_done = [False] * len(images)
  
-# Randomly select first image (Well Yes, But Actually No)
-im_no = 1 #np.random.randint(len(images))
+# Randomly select first image
+im_no = np.random.randint(len(images))
 
 im_done[im_no] = True
 
