@@ -48,8 +48,8 @@ if images are LARGE then rescale to make a quicker test
 - used for the drone images 
 """
 
-image1 = util.img_as_ubyte(transform.rescale(image1, 0.15))
-image2 = util.img_as_ubyte(transform.rescale(image2, 0.15))
+image1 = util.img_as_ubyte(transform.rescale(image1, 0.25))
+image2 = util.img_as_ubyte(transform.rescale(image2, 0.25))
 
 showImage(image1, 8, 8)
 
@@ -73,7 +73,7 @@ dst_pts = np.float32([keypoints1[m.trainIdx].pt for m in matches]).reshape(-1, 1
 
 # Our own function   
 H1, no_inliers = getRansacHomography(src_pts, dst_pts, 5.0)
-print(H1)
+print(H1) # H1 might be empty! try agan
 
 # The inbuild function from openCV
 H2, mask = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, 5.0)
@@ -88,8 +88,8 @@ for i in range (len(dst_pts)):
     print(np.round(p1[0],2), np.round(p2[0],2),"\t", np.round(p1[1],2), np.round(p2[1],2))
     
     
-h = 800
-w = 800
+h = 2000
+w = 2000
 
 # Shows the results of the two different homographies 
 result1 = cv2.warpPerspective(image1, H1, (w,h))
@@ -144,17 +144,17 @@ showImage(result2, 8, 8)
 # ================ TEST OF WARPING PERSPECTIVE FUNCTION =======================
 
 # Simple forward mapping - just used for test (and basic starting point)
-warped_image1 = warpImageBasic(image1, H1, 800,800)
+warped_image1 = warpImageBasic(image1, H1, h,w)
 warped_image1[0:image2.shape[0], 0:image2.shape[1]] = image2
 showImage(warped_image1, 8, 8)
 
 # Our own warping function - backward mapping
-warped_image2 = warpImage(image1, H1, 800,800)
+warped_image2 = warpImage(image1, H1, h,w)
 warped_image2[0:image2.shape[0], 0:image2.shape[1]] = image2
 showImage(warped_image2, 8, 8)
 
 # Inbuild warping function + inbuild homography
-result4 = cv2.warpPerspective(image1, H2, (800,800))
+result4 = cv2.warpPerspective(image1, H2, (w,h))
 result4[0:image2.shape[0], 0:image2.shape[1]] = image2
 showImage(result4, 8, 8)
 
