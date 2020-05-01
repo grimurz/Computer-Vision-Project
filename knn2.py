@@ -26,7 +26,7 @@ from sklearn.neighbors import KDTree
 
 # import own functions to test
 from r_homography import getPointsFromHomogeneousCoor, getRansacHomography
-from warp import warpImageBasic, warpImage
+from warp import warpImageBasic, warpImage, warpImage2
 
 
 np.set_printoptions(suppress=True)
@@ -217,7 +217,7 @@ H_f = np.repeat(id_m[:, :, np.newaxis], len(images), axis=2)
 im_done = [False] * len(images)
  
 # Randomly select first image
-im_no = 0 # np.random.randint(len(images))      # <--- Remember!
+im_no = 3 # np.random.randint(len(images))      # <--- Remember!
 
 anchor = images[im_no]
 
@@ -248,6 +248,8 @@ while False in im_done and sn < sn_m:
         if im_done[m] is False and im_no in bestMatchList[m]:
             
             H_inv = H_all[m][ bestMatchList[m].index(im_no) ] # inverted H -> Hij becomes Hji
+            
+            # H_inv = np.linalg.inv(H)      # <- better and more simple?
             
             im_done[m] = True
             break
@@ -341,7 +343,7 @@ for i in range(H_f.shape[2]):
 
 # Init canvas
 c_w = int(abs(min_x) + max_x + anchor.shape[1]*1.2)
-c_h = int(abs(min_y) + max_y + anchor.shape[0]*1.2)
+c_h = int(abs(min_y) + max_y + anchor.shape[0]*1.9)
 
 x_pad = int(abs(min_x))
 y_pad = int(abs(min_y))
@@ -351,7 +353,15 @@ canvas = np.zeros((c_h, c_w, 3)).astype(int)
 
 for i, im in enumerate(images):
         
+    # w_im = warpImage2(im, H_f[:,:,i], c_h,c_w, y_pad,x_pad)
     w_im = warpImage(im, H_f[:,:,i], c_h,c_w)
+
+    # plt.figure()
+    # plt.imshow(im)
+    
+    # plt.figure()
+    # plt.imshow(w_im)
+
     
     for x in range(c_w):
         for y in range(c_h):
@@ -364,6 +374,9 @@ for i, im in enumerate(images):
                 canvas[:,:,0][y+y_pad][x+x_pad] = r
                 canvas[:,:,1][y+y_pad][x+x_pad] = g
                 canvas[:,:,2][y+y_pad][x+x_pad] = b
+                # canvas[:,:,0][y][x] = r
+                # canvas[:,:,1][y][x] = g
+                # canvas[:,:,2][y][x] = b
 
 
 canvas[0+y_pad:anchor.shape[0]+y_pad, 0+x_pad:anchor.shape[1]+x_pad] = anchor
