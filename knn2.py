@@ -126,7 +126,7 @@ for img in range(0, imageCount):
     # Find the 4 best matching images for current image
     bestMatchingImages = []
     bestMatchingImagesCount = []
-    for i in range(0, 4):
+    for i in range(0, 8):                              # <--- Remember! 4 vs 8
         bestMatch = np.argmax(bestMatchCount)
         
         if (bestMatchCount[bestMatch] < 1):
@@ -217,14 +217,14 @@ H_f = np.repeat(id_m[:, :, np.newaxis], len(images), axis=2)
 im_done = [False] * len(images)
  
 # Randomly select first image
-im_no = np.random.randint(len(images))
+im_no = 0 # np.random.randint(len(images))      # <--- Remember!
 
 anchor = images[im_no]
 
 im_done[im_no] = True
 
 
-sn, sn_m = 0, 1000
+sn, sn_m = 0, 10 # 1000                        # <--- Remember!
 while False in im_done and sn < sn_m:
     
     # Get all done images
@@ -238,17 +238,15 @@ while False in im_done and sn < sn_m:
             if im_done[m] is False and bestMatchCountList[m][j] > max_matches:
                 max_matches = bestMatchCountList[m][j]
                 im_no = i
-    
+                break
+
     # Use image to find homography
-    
-    
     # Get best matched image
     H_inv = None
     for i, m in enumerate(bestMatchList[im_no]):
 
         if im_done[m] is False and im_no in bestMatchList[m]:
             
-            # H_temp = H_all[im_no][i]
             H_inv = H_all[m][ bestMatchList[m].index(im_no) ] # inverted H -> Hij becomes Hji
             
             im_done[m] = True
@@ -265,6 +263,7 @@ while False in im_done and sn < sn_m:
 
 if sn == sn_m:
     print('Shit\'s F-ed, yo!')
+    print(im_done)
 else:
     print('I AM COMPLETE!!!')
 
@@ -319,6 +318,8 @@ Wanted matches:
 
 
 #%% Get outer boundaries
+
+print('stitching...')
 
 min_x, max_x, min_y, max_y = 0,0,0,0
 
