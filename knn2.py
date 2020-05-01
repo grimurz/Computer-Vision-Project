@@ -354,7 +354,8 @@ canvas = np.zeros((c_h, c_w, 3)).astype(int)
 for i, im in enumerate(images):
         
     # w_im = warpImage2(im, H_f[:,:,i], c_h,c_w, y_pad,x_pad)
-    w_im = warpImage(im, H_f[:,:,i], c_h,c_w)
+    # w_im = warpImage(im, H_f[:,:,i], c_h,c_w)
+    w_im = cv2.warpPerspective(im, H_f[:,:,i], (c_w,c_h))
 
     # plt.figure()
     # plt.imshow(im)
