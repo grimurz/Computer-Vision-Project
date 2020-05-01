@@ -58,7 +58,7 @@ def isValidMatch(nf, ni):
 images = []
 # path = "testimages3"
 # path = "testimages5"
-path = "testimages4"
+path = "testimages7"
 for f in os.listdir(path):
     ext = os.path.splitext(f)[1]
     if ext != ".png":
