@@ -217,7 +217,7 @@ H_f = np.repeat(id_m[:, :, np.newaxis], len(images), axis=2)
 im_done = [False] * len(images)
  
 # Randomly select first image
-im_no = 0 # np.random.randint(len(images))      # <--- Remember!
+im_no = 1 # np.random.randint(len(images))      # <--- Remember!
 
 anchor = images[im_no]
 
@@ -342,8 +342,8 @@ for i in range(H_f.shape[2]):
         max_y = y
 
 # Init canvas
-c_w = int(abs(min_x) + max_x + anchor.shape[1]*1.2)
-c_h = int(abs(min_y) + max_y + anchor.shape[0]*1.2)
+c_w = int(abs(min_x) + max_x + anchor.shape[1]*1.0)
+c_h = int(abs(min_y) + max_y + anchor.shape[0]*1.0)
 
 x_pad = int(abs(min_x))
 y_pad = int(abs(min_y))
@@ -354,8 +354,7 @@ canvas = np.zeros((c_h, c_w, 3)).astype(int)
 for i, im in enumerate(images):
         
     # w_im = warpImage2(im, H_f[:,:,i], c_h,c_w, y_pad,x_pad)
-    # w_im = warpImage(im, H_f[:,:,i], c_h,c_w)
-    w_im = cv2.warpPerspective(im, H_f[:,:,i], (c_w,c_h))
+    w_im = warpImage(im, H_f[:,:,i], c_h,c_w)
 
     # plt.figure()
     # plt.imshow(im)
@@ -372,12 +371,9 @@ for i, im in enumerate(images):
             b = w_im[:,:,2][y][x]
             
             if r!=0 or g!=0 or b!=0:
-                canvas[:,:,0][y+y_pad][x+x_pad] = r
-                canvas[:,:,1][y+y_pad][x+x_pad] = g
-                canvas[:,:,2][y+y_pad][x+x_pad] = b
-                # canvas[:,:,0][y][x] = r
-                # canvas[:,:,1][y][x] = g
-                # canvas[:,:,2][y][x] = b
+                canvas[:,:,0][y][x] = r
+                canvas[:,:,1][y][x] = g
+                canvas[:,:,2][y][x] = b
 
 
 canvas[0+y_pad:anchor.shape[0]+y_pad, 0+x_pad:anchor.shape[1]+x_pad] = anchor
