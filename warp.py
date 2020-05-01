@@ -54,33 +54,3 @@ def warpImage(image, H, h, w):
     out = cv2.remap(image, x, y, cv2.INTER_LINEAR)
                               
     return out
-
-
-
-def warpImage2(image, H, h, w, ph, pw):
-    
-    H_inv = np.linalg.inv(H) 
-    
-    x = np.arange(1,w+1)
-    y = np.arange(1,h+1)
-    xv, yv = np.meshgrid(x, y)
-    xv = xv.flatten('C')
-    yv = yv.flatten('C')
-    zv = np.ones(len(xv))
-       
-    qi = np.vstack((xv,yv,zv))
-    q = np.dot(H_inv,qi[0:len(xv), :])
-    p = getPointsFromHomogeneousCoor(q[0:len(xv), :])
-    
-    x = p[0].astype(int)
-    y = p[1].astype(int)
-    x = x.reshape(h, w).astype(np.float32)
-    y = y.reshape(h, w).astype(np.float32)
-    
-    out = cv2.remap(image, x, y, cv2.INTER_LINEAR)
-                              
-    return out
-
-
-
-

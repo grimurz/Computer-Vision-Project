@@ -26,7 +26,7 @@ from sklearn.neighbors import KDTree
 
 # import own functions to test
 from r_homography import getPointsFromHomogeneousCoor, getRansacHomography
-from warp import warpImageBasic, warpImage, warpImage2
+from warp import warpImageBasic, warpImage
 
 
 np.set_printoptions(suppress=True)
@@ -85,16 +85,7 @@ for i in range(0, imageCount):
 print("[INFO] SIFT done")
 
 # II. Find k nearest-neighbours for each feature using a k-d tree
-#knnmatcher = cv2.BFMatcher(cv2.NORM_L2, crossCheck = False)
-#raw = knnmatcher.knnMatch(descriptors0, descriptors1, 2)
-
-#allDescriptors = []
 allDescriptors_imgIdx = []
-
-#allDescriptors.append(descriptors[0])
-
-#allDescriptors.append(descriptors[1])
-#allDescriptors_imgIdx.extend( [ 1 ] * len(descriptors[1]) )
 
 allDescriptors = descriptors[0]
 allDescriptors_imgIdx.extend( [ 0 ] * len(descriptors[0]) )
@@ -111,9 +102,8 @@ bestMatchCountList = []
 for img in range(0, imageCount):
     print("Best-matching img ", img)
     bestMatchCount = [ 0 ] * imageCount
-    #print("first...")
+    
     for feature in descriptors[img]:
-        #print("feature: ", feature)
         dist, matching_idx = tree.query(feature.reshape(1, -1), k=4)
         for idx in matching_idx[0]:
             matchImg = allDescriptors_imgIdx[idx]
@@ -121,12 +111,10 @@ for img in range(0, imageCount):
             if (matchImg != img):
                 bestMatchCount[matchImg] += 1
 
-    #print("Half...")
-
-    # Find the 4 best matching images for current image
+    # Find the 8 best matching images for current image
     bestMatchingImages = []
     bestMatchingImagesCount = []
-    for i in range(0, 8):                              # <--- Remember! 4 vs 8
+    for i in range(0, 8):
         bestMatch = np.argmax(bestMatchCount)
         
         if (bestMatchCount[bestMatch] < 1):
@@ -177,7 +165,6 @@ for img in range(0, imageCount):
         if len(matches) > 0:
         
             H, mask = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, 5.0)
-            #print("img, imgMatch: ", img, imgMatch, '\n', H, '\n')
             print("img, imgMatch: ", img, imgMatch)
             
             no_inliers = np.sum(mask) 
@@ -217,14 +204,13 @@ H_f = np.repeat(id_m[:, :, np.newaxis], len(images), axis=2)
 im_done = [False] * len(images)
  
 # Randomly select first image
-im_no = 1 # np.random.randint(len(images))      # <--- Remember!
-
+im_no =   np.random.randint(len(images))                   # <--- Remember!
 anchor = images[im_no]
-
 im_done[im_no] = True
+print('\nanchor:', im_no,'\n')
 
 
-sn, sn_m = 0, 10 # 1000                        # <--- Remember!
+sn, sn_m = 0, 1000
 while False in im_done and sn < sn_m:
     
     # Get all done images
@@ -247,9 +233,8 @@ while False in im_done and sn < sn_m:
 
         if im_done[m] is False and im_no in bestMatchList[m]:
             
-            H_inv = H_all[m][ bestMatchList[m].index(im_no) ] # inverted H -> Hij becomes Hji
-            
-            # H_inv = np.linalg.inv(H)      # <- better and more simple?
+            # H_inv = H_all[m][ bestMatchList[m].index(im_no) ] # troglodyte method
+            H_inv = np.linalg.inv(H_all[im_no][i]) # better and more simple method
             
             im_done[m] = True
             break
@@ -272,56 +257,51 @@ else:
 
 #%%
 
-# Output: Panoramic image(s)
-h = 700
-w = 700
-s = 250 # shift
+# # Output: Panoramic image(s)
+# h = 700
+# w = 700
+# s = 250 # shift
 
- 
+# for i in range(len(images)):
 
-for i in range(len(images)):
-
-    for j, m in enumerate(bestMatchList[i]):
+#     for j, m in enumerate(bestMatchList[i]):
         
-        Hm = H_all[i][j]
+#         Hm = H_all[i][j]
         
-        if Hm is not None:
-            Hm[0][2] += s
-            Hm[1][2] += s
+#         if Hm is not None:
+#             Hm[0][2] += s
+#             Hm[1][2] += s
         
-            warpedImage = cv2.warpPerspective(images[i], Hm, (w,h))
-            warpedImage[0+s:images[m].shape[0]+s, 0+s:images[m].shape[1]+s] = images[m]
+#             warpedImage = cv2.warpPerspective(images[i], Hm, (w,h))
+#             warpedImage[0+s:images[m].shape[0]+s, 0+s:images[m].shape[1]+s] = images[m]
             
-            plt.figure()
-            plt.title(str(i) +' '+ str(m))
-            plt.imshow(warpedImage)
-            plt.show
+#             plt.figure()
+#             plt.title(str(i) +' '+ str(m))
+#             plt.imshow(warpedImage)
+#             plt.show
   
-'''
-    1  2  3     0  1  2
-    4  5  6     3  4  5
-    7  8  9     6  7  8
+# '''
+#     1  2  3     0  1  2
+#     4  5  6     3  4  5
+#     7  8  9     6  7  8
     
-Images loaded: 02,06,09,07,03,05,01,04,08
-               0 ,1, 2, 3, 4, 5, 6, 7, 8
-Wanted matches: 
-    0-6, 0-7, 0-5 => also get 04
-    1-4, 1-5, 1-2 => also get 1-8
-    2-1, 2-8      => also get 2-5 (2-3 removed)
-    3-7, 3-8      => also get 3-5 (3-2 removed)
-    4-0, 4-1      => also get 4-5 (4-2 not match)
-    5-0, 5-7, 5-1, 5-8 => does not get 5-0, but 5-2 instead
-    6-0, 6-7      => also get 6-5 (6-1 removed)
-    7-6, 7-5, 7-3 => also get 7-8
-    8-3, 8-5, 8-2 => also get 8-7
-'''
-
-
-
+# Images loaded: 02,06,09,07,03,05,01,04,08
+#                0 ,1, 2, 3, 4, 5, 6, 7, 8
+# Wanted matches: 
+#     0-6, 0-7, 0-5 => also get 04
+#     1-4, 1-5, 1-2 => also get 1-8
+#     2-1, 2-8      => also get 2-5 (2-3 removed)
+#     3-7, 3-8      => also get 3-5 (3-2 removed)
+#     4-0, 4-1      => also get 4-5 (4-2 not match)
+#     5-0, 5-7, 5-1, 5-8 => does not get 5-0, but 5-2 instead
+#     6-0, 6-7      => also get 6-5 (6-1 removed)
+#     7-6, 7-5, 7-3 => also get 7-8
+#     8-3, 8-5, 8-2 => also get 8-7
+# '''
 
 #%% Get outer boundaries
 
-print('stitching...')
+print('\nstitching...')
 
 min_x, max_x, min_y, max_y = 0,0,0,0
 
@@ -342,8 +322,8 @@ for i in range(H_f.shape[2]):
         max_y = y
 
 # Init canvas
-c_w = int(abs(min_x) + max_x + anchor.shape[1]*1.0)
-c_h = int(abs(min_y) + max_y + anchor.shape[0]*1.0)
+c_w = int(abs(min_x) + max_x + anchor.shape[1]*1.3) # images should be of roughly same size as the anchor
+c_h = int(abs(min_y) + max_y + anchor.shape[0]*1.3)
 
 x_pad = int(abs(min_x))
 y_pad = int(abs(min_y))
@@ -352,16 +332,12 @@ canvas = np.zeros((c_h, c_w, 3)).astype(int)
 
 
 for i, im in enumerate(images):
-        
-    # w_im = warpImage2(im, H_f[:,:,i], c_h,c_w, y_pad,x_pad)
-    w_im = warpImage(im, H_f[:,:,i], c_h,c_w)
-
-    # plt.figure()
-    # plt.imshow(im)
     
-    # plt.figure()
-    # plt.imshow(w_im)
-
+    H_temp = H_f[:,:,i]
+    H_temp[0][2] += x_pad
+    H_temp[1][2] += y_pad
+    
+    w_im = warpImage(im, H_temp, c_h,c_w)
     
     for x in range(c_w):
         for y in range(c_h):
@@ -376,11 +352,22 @@ for i, im in enumerate(images):
                 canvas[:,:,2][y][x] = b
 
 
-canvas[0+y_pad:anchor.shape[0]+y_pad, 0+x_pad:anchor.shape[1]+x_pad] = anchor
+# We might want to render the images in reverse order, ending on the anchor
+# canvas[0+y_pad:anchor.shape[0]+y_pad, 0+x_pad:anchor.shape[1]+x_pad] = anchor
 
+# Remove black border
+gray = cv2.cvtColor(canvas.astype('uint8'),cv2.COLOR_BGR2GRAY)
+_,thresh = cv2.threshold(gray,1,255,cv2.THRESH_BINARY)
+_, contours, _ = cv2.findContours(thresh,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
+cnt = contours[0]
+x,y,w,h = cv2.boundingRect(cnt)
+crop = canvas[y:y+h,x:x+w]
 
 plt.figure()
 plt.imshow(canvas)
+
+plt.figure()
+plt.imshow(crop)
 
 plt.figure()
 plt.imshow(cv2.imread('mountain.png'))
