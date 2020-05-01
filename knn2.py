@@ -56,7 +56,7 @@ def isValidMatch(nf, ni):
 
 
 images = []
-# path = "testimages2"
+# path = "testimages3"
 # path = "testimages5"
 path = "testimages4"
 for f in os.listdir(path):
