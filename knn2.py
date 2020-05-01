@@ -217,7 +217,7 @@ H_f = np.repeat(id_m[:, :, np.newaxis], len(images), axis=2)
 im_done = [False] * len(images)
  
 # Randomly select first image
-im_no = 3 # np.random.randint(len(images))      # <--- Remember!
+im_no = 0 # np.random.randint(len(images))      # <--- Remember!
 
 anchor = images[im_no]
 
@@ -343,7 +343,7 @@ for i in range(H_f.shape[2]):
 
 # Init canvas
 c_w = int(abs(min_x) + max_x + anchor.shape[1]*1.2)
-c_h = int(abs(min_y) + max_y + anchor.shape[0]*1.9)
+c_h = int(abs(min_y) + max_y + anchor.shape[0]*1.2)
 
 x_pad = int(abs(min_x))
 y_pad = int(abs(min_y))
