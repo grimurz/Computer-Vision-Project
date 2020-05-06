@@ -96,7 +96,6 @@ def getRansacHomography(p_1, p_2, valid_error):
     
     for i in range (n):
         # select four random point pairs of input points
-        # points = random.sample(points, len(points)) 
         points = random.sample(points, r) 
         p1, p2 = zip(*points)
         p1 = np.asarray(p1)
@@ -128,12 +127,7 @@ def getRansacHomography(p_1, p_2, valid_error):
             else:
                 continue
         # end inner loop
-        # check if match is valid - if true add to homographies
-        if isValidMatch(len(points1), no_inliers):
-            homographies.append((H, no_inliers))
-        else:
-            #print("NOT v match")
-            continue
+        homographies.append((H, no_inliers))
     
     # end outer loop
     # if homographies is empty, return the empty list and 0 inliers 
