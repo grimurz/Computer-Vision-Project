@@ -114,7 +114,7 @@ for img in range(0, imageCount):
     # Find the 8 best matching images for current image
     bestMatchingImages = []
     bestMatchingImagesCount = []
-    for i in range(0, 8):
+    for i in range(0, 8):                                   # <-- ATTN!
         bestMatch = np.argmax(bestMatchCount)
         
         if (bestMatchCount[bestMatch] < 1):
@@ -165,15 +165,19 @@ for img in range(0, imageCount):
         if len(matches) > 0:
         
             H, mask = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, 5.0)
+            no_inliers = np.sum(mask) 
+            # H, no_inliers = getRansacHomography(src_pts, dst_pts, 5.0)
+            
             print("img, imgMatch: ", img, imgMatch)
             
-            no_inliers = np.sum(mask) 
         else:
             print('No matches for', img, imgMatch)
             H = None
             no_inliers = 0
        
         # (iii) Verify imagematches using a probabilistic model
+        
+        # H_temp.append(H)
         
         if isValidMatch(len(src_pts), no_inliers):
             print("Validated match for img, imgMatch: ", img, imgMatch)
@@ -369,7 +373,7 @@ plt.imshow(canvas)
 plt.figure()
 plt.imshow(crop)
 
-plt.figure()
-plt.imshow(cv2.imread('mountain.png'))
+# plt.figure()
+# plt.imshow(cv2.imread('mountain.png'))
 
 

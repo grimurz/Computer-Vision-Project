@@ -96,6 +96,7 @@ def getRansacHomography(p_1, p_2, valid_error):
     
     for i in range (n):
         # select four random point pairs of input points
+        # points = random.sample(points, len(points)) 
         points = random.sample(points, r) 
         p1, p2 = zip(*points)
         p1 = np.asarray(p1)
