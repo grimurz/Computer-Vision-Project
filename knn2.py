@@ -55,6 +55,7 @@ def isValidMatch(nf, ni):
 
 
 
+scaleImages = False
 images = []
 # path = "testimages3"
 # path = "testimages5"
@@ -68,6 +69,19 @@ for f in os.listdir(path):
     images.append(cv2.imread(os.path.join(path,f)))
 
 imageCount = len(images)
+
+if scaleImages:
+    print('[INFO scaling images')
+    for i in range(len(images)):
+        scale_percent = 100 # percent of original size
+        width = int(images[i].shape[1] * scale_percent / 100)
+        height = int(images[i].shape[0] * scale_percent / 100)
+        dim = (width, height)
+        # resize image
+        images[i] = cv2.resize(images[i], dim, interpolation = cv2.INTER_AREA) 
+        #images[i] = util.img_as_ubyte(transform.rescale(images[i], 0.40)).squeeze()
+
+
 print("[INFO] stitching images...")
 
 ###   Algorithm: Automatic Panorama Stitching Input: n unordered images
