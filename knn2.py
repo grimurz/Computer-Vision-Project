@@ -184,11 +184,11 @@ for img in range(0, imageCount):
         src_pts = np.float32([keypoints[img][m['featureIdx']].pt for m in matches]).reshape(-1, 1, 2)
         dst_pts = np.float32([keypoints[imgMatch][m['matchIdx']].pt for m in matches]).reshape(-1, 1, 2)
 
-        if len(matches) > 0:           # <- ATTN!
+        if len(matches) > 8:           # <- ATTN!
         
-            H, mask = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, 5.0)           # <- ATTN!
-            no_inliers = np.sum(mask) 
-            # H, no_inliers = getRansacHomography(src_pts, dst_pts, 5.0)
+            # H, mask = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, 5.0)           # <- ATTN!
+            # no_inliers = np.sum(mask) 
+            H, no_inliers = getRansacHomography(src_pts, dst_pts, 5.0)
             
             print("img, imgMatch: ", img, imgMatch)
             print(H)
@@ -231,7 +231,7 @@ H_f = np.repeat(id_m[:, :, np.newaxis], len(images), axis=2)
 im_done = [False] * len(images)
  
 # Randomly select first image
-im_no =   np.random.randint(len(images))                   # <--- Remember!
+im_no = 2  #np.random.randint(len(images))                   # <--- Remember!
 anchor = images[im_no]
 im_done[im_no] = True
 print('\nanchor:', im_no,'\n')
@@ -333,13 +333,13 @@ for i in range(H_f.shape[2]):
     if y > max_y:
         max_y = y
 
-# # Init canvas
-c_w = int(abs(min_x) + max_x + anchor.shape[1]*1.3) # images should be of roughly same size as the anchor
-c_h = int(abs(min_y) + max_y + anchor.shape[0]*1.3)
+# # # Init canvas
+# c_w = int(abs(min_x) + max_x + anchor.shape[1]*1.3) # images should be of roughly same size as the anchor
+# c_h = int(abs(min_y) + max_y + anchor.shape[0]*1.3)
 
-# # Init canvas
-# c_w = 350 #int(abs(min_x) + max_x + anchor.shape[1]*1.3) # images should be of roughly same size as the anchor
-# c_h = 250 #int(abs(min_y) + max_y + anchor.shape[0]*1.3)
+# Init canvas
+c_w = 500 #int(abs(min_x) + max_x + anchor.shape[1]*1.3) # images should be of roughly same size as the anchor
+c_h = 500 #int(abs(min_y) + max_y + anchor.shape[0]*1.3)
 
 x_pad = int(abs(min_x))
 y_pad = int(abs(min_y))
