@@ -57,9 +57,7 @@ def isValidMatch(nf, ni):
 
 scaleImages = False
 images = []
-# path = "testimages3"
-# path = "testimages5"
-path = "testimages4"
+path = "testimages6"
 for f in os.listdir(path):
     ext = os.path.splitext(f)[1]
     if ext != ".png":
@@ -73,7 +71,7 @@ imageCount = len(images)
 if scaleImages:
     print('[INFO scaling images')
     for i in range(len(images)):
-        scale_percent = 40 # percent of original size
+        scale_percent = 30 # percent of original size
         width = int(images[i].shape[1] * scale_percent / 100)
         height = int(images[i].shape[0] * scale_percent / 100)
         dim = (width, height)
@@ -186,13 +184,14 @@ for img in range(0, imageCount):
         src_pts = np.float32([keypoints[img][m['featureIdx']].pt for m in matches]).reshape(-1, 1, 2)
         dst_pts = np.float32([keypoints[imgMatch][m['matchIdx']].pt for m in matches]).reshape(-1, 1, 2)
 
-        if len(matches) > 0:
+        if len(matches) > 0:           # <- ATTN!
         
-            H, mask = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, 5.0)
-            no_inliers = np.sum(mask) 
-            # H, no_inliers = getRansacHomography(src_pts, dst_pts, 5.0)
+            # H, mask = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, 5.0)           # <- ATTN!
+            # no_inliers = np.sum(mask) 
+            H, no_inliers = getRansacHomography(src_pts, dst_pts, 5.0)
             
             print("img, imgMatch: ", img, imgMatch)
+            print(H)
             
         else:
             print('No matches for', img, imgMatch)
@@ -262,8 +261,8 @@ while False in im_done and sn < sn_m:
         if im_done[m] is False and im_no in bestMatchList[m]:
             
             if H_all[im_no][i] is not None:
-                # H_inv = H_all[m][ bestMatchList[m].index(im_no) ] # troglodyte method
-                H_inv = np.linalg.inv(H_all[im_no][i]) # better and more simple method
+                H_inv = H_all[m][ bestMatchList[m].index(im_no) ] # troglodyte method
+                # H_inv = np.linalg.inv(H_all[im_no][i]) # better and more simple method
             else:
                 H_inv = None
              
@@ -289,9 +288,9 @@ else:
 #%%
 
 # # Output: Panoramic image(s)
-# h = 700
-# w = 700
-# s = 250 # shift
+# h = 500
+# w = 500
+# s = 50 # shift
 
 # for i in range(len(images)):
 
@@ -310,25 +309,7 @@ else:
 #             plt.title(str(i) +' '+ str(m))
 #             plt.imshow(warpedImage)
 #             plt.show
-  
-# '''
-#     1  2  3     0  1  2
-#     4  5  6     3  4  5
-#     7  8  9     6  7  8
-    
-# Images loaded: 02,06,09,07,03,05,01,04,08
-#                0 ,1, 2, 3, 4, 5, 6, 7, 8
-# Wanted matches: 
-#     0-6, 0-7, 0-5 => also get 04
-#     1-4, 1-5, 1-2 => also get 1-8
-#     2-1, 2-8      => also get 2-5 (2-3 removed)
-#     3-7, 3-8      => also get 3-5 (3-2 removed)
-#     4-0, 4-1      => also get 4-5 (4-2 not match)
-#     5-0, 5-7, 5-1, 5-8 => does not get 5-0, but 5-2 instead
-#     6-0, 6-7      => also get 6-5 (6-1 removed)
-#     7-6, 7-5, 7-3 => also get 7-8
-#     8-3, 8-5, 8-2 => also get 8-7
-# '''
+
 
 #%% Get outer boundaries
 
@@ -352,9 +333,13 @@ for i in range(H_f.shape[2]):
     if y > max_y:
         max_y = y
 
-# Init canvas
+# # Init canvas
 c_w = int(abs(min_x) + max_x + anchor.shape[1]*1.3) # images should be of roughly same size as the anchor
 c_h = int(abs(min_y) + max_y + anchor.shape[0]*1.3)
+
+# # Init canvas
+# c_w = 350 #int(abs(min_x) + max_x + anchor.shape[1]*1.3) # images should be of roughly same size as the anchor
+# c_h = 250 #int(abs(min_y) + max_y + anchor.shape[0]*1.3)
 
 x_pad = int(abs(min_x))
 y_pad = int(abs(min_y))
@@ -394,8 +379,8 @@ cnt = contours[0]
 x,y,w,h = cv2.boundingRect(cnt)
 crop = canvas[y:y+h,x:x+w]
 
-plt.figure()
-plt.imshow(canvas)
+# plt.figure()
+# plt.imshow(canvas)
 
 plt.figure()
 plt.imshow(crop)

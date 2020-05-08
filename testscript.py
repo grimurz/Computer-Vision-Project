@@ -90,8 +90,8 @@ for i in range (len(dst_pts)):
     print(np.round(p1[0],2), np.round(p2[0],2),"\t", np.round(p1[1],2), np.round(p2[1],2))
     
     
-h = 300
-w = 300
+h = 400
+w = 400
 
 # Shows the results of the two different homographies 
 result1 = cv2.warpPerspective(image1, H1, (w,h))
