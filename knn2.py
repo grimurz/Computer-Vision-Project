@@ -73,7 +73,7 @@ imageCount = len(images)
 if scaleImages:
     print('[INFO scaling images')
     for i in range(len(images)):
-        scale_percent = 100 # percent of original size
+        scale_percent = 40 # percent of original size
         width = int(images[i].shape[1] * scale_percent / 100)
         height = int(images[i].shape[0] * scale_percent / 100)
         dim = (width, height)
@@ -159,18 +159,28 @@ for img in range(0, imageCount):
             continue
 
         matches = []
-        tree = KDTree(np.append(descriptors[imgMatch], descriptors[img], axis=0))
+        tree = KDTree(descriptors[imgMatch])
         
         for featureIdx in range(0, len(descriptors[img])):
-            dists, indices = tree.query(descriptors[img][featureIdx].reshape(1,-1), k=2)
+            neighbors = 6
+            dists, indices = tree.query(descriptors[img][featureIdx].reshape(1,-1), k=neighbors)
             
-            # If match is not other image, then skip feature entirely
-            if indices[0][0] >= len(descriptors[imgMatch]):
-                continue
+            i = 0
+            while i < neighbors-1: 
+                # If match is not other image, then skip feature entirely
+                if indices[0][i] >= len(descriptors[imgMatch]):
+                    print("debug 1")
+                    continue
+                                   
             
-            if indices[0][1] >= len(descriptors[imgMatch]) or dists[0][0] < dists[0][1] * 0.7:
-                matches.append( { 'featureIdx' : featureIdx, 'matchIdx' : indices[0][0] })
-            
+                if dists[0][i] < dists[0][i+1] * 0.7: #0.7
+                #if indices[0][1] >= len(descriptors[imgMatch]) or dists[0][0] < dists[0][1] * 0.7:
+                    matches.append( { 'featureIdx' : featureIdx, 'matchIdx' : indices[0][i] })
+                    #print("i: ", i)
+                    i = neighbors
+                    #print("debug 2")
+                i=i+1
+                    
         
         # (ii) Find geometrically consistent feature matches using RANSAC to solve for the homography between pairs of images
         src_pts = np.float32([keypoints[img][m['featureIdx']].pt for m in matches]).reshape(-1, 1, 2)
@@ -251,9 +261,12 @@ while False in im_done and sn < sn_m:
 
         if im_done[m] is False and im_no in bestMatchList[m]:
             
-            # H_inv = H_all[m][ bestMatchList[m].index(im_no) ] # troglodyte method
-            H_inv = np.linalg.inv(H_all[im_no][i]) # better and more simple method
-            
+            if H_all[im_no][i] is not None:
+                # H_inv = H_all[m][ bestMatchList[m].index(im_no) ] # troglodyte method
+                H_inv = np.linalg.inv(H_all[im_no][i]) # better and more simple method
+            else:
+                H_inv = None
+             
             im_done[m] = True
             break
     
