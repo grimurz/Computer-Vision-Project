@@ -55,9 +55,9 @@ def isValidMatch(nf, ni):
 
 
 
-scaleImages = False
+scaleImages = True
 images = []
-path = "testimages6"
+path = "testimages3"
 for f in os.listdir(path):
     ext = os.path.splitext(f)[1]
     if ext != ".png":
@@ -71,7 +71,7 @@ imageCount = len(images)
 if scaleImages:
     print('[INFO scaling images')
     for i in range(len(images)):
-        scale_percent = 30 # percent of original size
+        scale_percent = 40 # percent of original size
         width = int(images[i].shape[1] * scale_percent / 100)
         height = int(images[i].shape[0] * scale_percent / 100)
         dim = (width, height)
@@ -186,9 +186,9 @@ for img in range(0, imageCount):
 
         if len(matches) > 0:           # <- ATTN!
         
-            # H, mask = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, 5.0)           # <- ATTN!
-            # no_inliers = np.sum(mask) 
-            H, no_inliers = getRansacHomography(src_pts, dst_pts, 5.0)
+            H, mask = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, 5.0)           # <- ATTN!
+            no_inliers = np.sum(mask) 
+            # H, no_inliers = getRansacHomography(src_pts, dst_pts, 5.0)
             
             print("img, imgMatch: ", img, imgMatch)
             print(H)
