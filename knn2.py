@@ -71,7 +71,7 @@ imageCount = len(images)
 if scaleImages:
     print('[INFO scaling images')
     for i in range(len(images)):
-        scale_percent = 40 # percent of original size
+        scale_percent = 50 # percent of original size
         width = int(images[i].shape[1] * scale_percent / 100)
         height = int(images[i].shape[0] * scale_percent / 100)
         dim = (width, height)
@@ -186,11 +186,12 @@ for img in range(0, imageCount):
 
         if len(matches) > 8:           # <- ATTN!
         
-            # H, mask = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, 5.0)           # <- ATTN!
+            # H2, mask = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, 5.0)           # <- ATTN!
             # no_inliers = np.sum(mask) 
             H, no_inliers = getRansacHomography(src_pts, dst_pts, 5.0)
             
             print("img, imgMatch: ", img, imgMatch)
+            # print(H2)
             print(H)
             
         else:
@@ -231,7 +232,7 @@ H_f = np.repeat(id_m[:, :, np.newaxis], len(images), axis=2)
 im_done = [False] * len(images)
  
 # Randomly select first image
-im_no = 2  #np.random.randint(len(images))                   # <--- Remember!
+im_no = 1  #np.random.randint(len(images))                   # <--- Remember!
 anchor = images[im_no]
 im_done[im_no] = True
 print('\nanchor:', im_no,'\n')
@@ -288,15 +289,19 @@ else:
 #%%
 
 # # Output: Panoramic image(s)
-# h = 500
-# w = 500
-# s = 50 # shift
+# h = 550
+# w = 550
+# s = 0 # shift
 
 # for i in range(len(images)):
 
+#     print(i)
+    
 #     for j, m in enumerate(bestMatchList[i]):
         
 #         Hm = H_all[i][j]
+        
+#         print(Hm)
         
 #         if Hm is not None:
 #             Hm[0][2] += s
@@ -318,8 +323,8 @@ print('\nstitching...')
 min_x, max_x, min_y, max_y = 0,0,0,0
 
 for i in range(H_f.shape[2]):
-    x = H_f[:,:,i][0][2]    
-    y = H_f[:,:,i][1][2]
+    x = H_f[:,:,i][0][2] / H_f[:,:,i][2][2]
+    y = H_f[:,:,i][1][2] / H_f[:,:,i][2][2]
 
     if x < min_x:
         min_x = x
@@ -332,14 +337,15 @@ for i in range(H_f.shape[2]):
         
     if y > max_y:
         max_y = y
+        
 
-# # # Init canvas
-# c_w = int(abs(min_x) + max_x + anchor.shape[1]*1.3) # images should be of roughly same size as the anchor
-# c_h = int(abs(min_y) + max_y + anchor.shape[0]*1.3)
+# # Init canvas
+c_w = int(abs(min_x) + max_x + anchor.shape[1]*1.1) # images should be of roughly same size as the anchor
+c_h = int(abs(min_y) + max_y + anchor.shape[0]*1.1)
 
-# Init canvas
-c_w = 500 #int(abs(min_x) + max_x + anchor.shape[1]*1.3) # images should be of roughly same size as the anchor
-c_h = 500 #int(abs(min_y) + max_y + anchor.shape[0]*1.3)
+# # Init canvas
+# c_w = 1000 #int(abs(min_x) + max_x + anchor.shape[1]*1.3) # images should be of roughly same size as the anchor
+# c_h = 1000 #int(abs(min_y) + max_y + anchor.shape[0]*1.3)
 
 x_pad = int(abs(min_x))
 y_pad = int(abs(min_y))
@@ -350,8 +356,8 @@ canvas = np.zeros((c_h, c_w, 3)).astype(int)
 for i, im in enumerate(images):
     
     H_temp = H_f[:,:,i]
-    H_temp[0][2] += x_pad
-    H_temp[1][2] += y_pad
+    H_temp[0][2] += x_pad * H_temp[2][2]
+    H_temp[1][2] += y_pad * H_temp[2][2]
     
     w_im = warpImage(im, H_temp, c_h,c_w)
     
@@ -379,8 +385,8 @@ cnt = contours[0]
 x,y,w,h = cv2.boundingRect(cnt)
 crop = canvas[y:y+h,x:x+w]
 
-# plt.figure()
-# plt.imshow(canvas)
+plt.figure()
+plt.imshow(canvas)
 
 plt.figure()
 plt.imshow(crop)
