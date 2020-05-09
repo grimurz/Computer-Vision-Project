@@ -57,7 +57,7 @@ def isValidMatch(nf, ni):
 
 scaleImages = True
 images = []
-path = "testimages3"
+path = "testimages9"
 for f in os.listdir(path):
     ext = os.path.splitext(f)[1]
     if ext != ".png":
@@ -71,7 +71,7 @@ imageCount = len(images)
 if scaleImages:
     print('[INFO scaling images')
     for i in range(len(images)):
-        scale_percent = 50 # percent of original size
+        scale_percent = 40 # percent of original size
         width = int(images[i].shape[1] * scale_percent / 100)
         height = int(images[i].shape[0] * scale_percent / 100)
         dim = (width, height)
@@ -232,7 +232,7 @@ H_f = np.repeat(id_m[:, :, np.newaxis], len(images), axis=2)
 im_done = [False] * len(images)
  
 # Randomly select first image
-im_no = 1  #np.random.randint(len(images))                   # <--- Remember!
+im_no = np.random.randint(len(images))                   # <--- Remember!
 anchor = images[im_no]
 im_done[im_no] = True
 print('\nanchor:', im_no,'\n')
@@ -394,13 +394,8 @@ plt.imshow(crop)
 # plt.figure()
 # plt.imshow(cv2.imread('mountain.png'))
 
+
 #%%
 
 filename = 'savedImage.jpg'
-  
-# Using cv2.imwrite() method 
-# Saving the image 
 cv2.imwrite(filename, crop)
-
-
-
