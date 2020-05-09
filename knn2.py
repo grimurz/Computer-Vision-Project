@@ -394,4 +394,13 @@ plt.imshow(crop)
 # plt.figure()
 # plt.imshow(cv2.imread('mountain.png'))
 
+#%%
+
+filename = 'savedImage.jpg'
+  
+# Using cv2.imwrite() method 
+# Saving the image 
+cv2.imwrite(filename, crop)
+
+
 
