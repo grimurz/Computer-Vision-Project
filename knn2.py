@@ -241,7 +241,8 @@ H_f = np.repeat(id_m[:, :, np.newaxis], len(images), axis=2)
 im_done = [False] * len(images)
  
 # Randomly select first image
-im_no = 2 # np.random.randint(len(images))                     # <--- REMEMBER!
+im_no = 6 # int(len(images)/2)  # 4 # np.random.randint(len(images))                     # <--- REMEMBER!
+anchor_id = im_no
 anchor = images[im_no]
 im_done[im_no] = True
 print('\nanchor:', im_no,'\n')
@@ -362,12 +363,12 @@ y_pad = int(abs(min_y))
 canvas = np.zeros((c_h, c_w, 3)).astype(int)
 
 
-# [ A | im_no | B ] -> [ B_rev | A | im_no ]
+# [ A | anchor_id | B ] -> [ B_rev | A | anchor_id ]
 # [ 1 2 3 | 4 | 5 6 7] - > [ 7 6 5 | 1 2 3 | 4 ]
 rend_order = np.arange(len(images))
-ro_A = rend_order[0:im_no]
-ro_B = np.flip(rend_order[im_no+1:])
-rend_order_nu = np.concatenate((ro_B, ro_A, [im_no]), axis=0)
+ro_A = rend_order[0:anchor_id]
+ro_B = np.flip(rend_order[anchor_id+1:])
+rend_order_nu = np.concatenate((ro_B, ro_A, [anchor_id]), axis=0)
 
 # for i, im in enumerate(images):
 for i in rend_order_nu:
