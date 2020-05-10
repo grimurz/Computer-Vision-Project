@@ -174,7 +174,7 @@ for img in range(0, imageCount):
                     continue
                                    
             
-                if dists[0][i] < dists[0][i+1] * 0.7: #0.7
+                if dists[0][i] < dists[0][i+1] * 0.5: #0.7
                 #if indices[0][1] >= len(descriptors[imgMatch]) or dists[0][0] < dists[0][1] * 0.7:
                     matches.append( { 'featureIdx' : featureIdx, 'matchIdx' : indices[0][i] })
                     #print("i: ", i)
@@ -241,7 +241,7 @@ H_f = np.repeat(id_m[:, :, np.newaxis], len(images), axis=2)
 im_done = [False] * len(images)
  
 # Randomly select first image
-im_no = np.random.randint(len(images))                   # <--- Remember!
+im_no = 2 # np.random.randint(len(images))                     # <--- REMEMBER!
 anchor = images[im_no]
 im_done[im_no] = True
 print('\nanchor:', im_no,'\n')
