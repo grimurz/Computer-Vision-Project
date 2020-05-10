@@ -362,13 +362,22 @@ y_pad = int(abs(min_y))
 canvas = np.zeros((c_h, c_w, 3)).astype(int)
 
 
-for i, im in enumerate(images):
+# [ A | im_no | B ] -> [ B_rev | A | im_no ]
+# [ 1 2 3 | 4 | 5 6 7] - > [ 7 6 5 | 1 2 3 | 4 ]
+rend_order = np.arange(len(images))
+ro_A = rend_order[0:im_no]
+ro_B = np.flip(rend_order[im_no+1:])
+rend_order_nu = np.concatenate((ro_B, ro_A, [im_no]), axis=0)
+
+# for i, im in enumerate(images):
+for i in rend_order_nu:
     
     H_temp = H_f[:,:,i]
     H_temp[0][2] += x_pad * H_temp[2][2]
     H_temp[1][2] += y_pad * H_temp[2][2]
     
-    w_im = warpImage(im, H_temp, c_h,c_w)
+    # w_im = warpImage(im, H_temp, c_h,c_w)
+    w_im = warpImage(images[i], H_temp, c_h,c_w)
     
     for x in range(c_w):
         for y in range(c_h):
@@ -394,8 +403,8 @@ cnt = contours[0]
 x,y,w,h = cv2.boundingRect(cnt)
 crop = canvas[y:y+h,x:x+w]
 
-plt.figure()
-plt.imshow(canvas)
+# plt.figure()
+# plt.imshow(canvas)
 
 plt.figure()
 plt.imshow(crop)
