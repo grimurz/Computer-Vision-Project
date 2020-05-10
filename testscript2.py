@@ -34,27 +34,29 @@ def showImage(im, h, w):
 # read images from path
 # chance path and extention according to the images and type of images you want to test 
 images = []
-path = "testimages1"
+path = "testimages6"
 
 for f in os.listdir(path):
     ext = os.path.splitext(f)[1]
-    if ext != ".JPG":
+    if ext != ".png":
         continue
     images.append(cv2.imread(os.path.join(path,f)))
     
-image1 = images[1]
-image2 = images[0]
+image1 = images[0]
+image2 = images[1]
 
 #%% ===================== RESCALE OF IMAGES ===================================
-"""
-if images are LARGE then rescale to make a quicker test
-- used for the drone images, else uncomment the two lines!
-"""
-
-image1 = util.img_as_ubyte(transform.rescale(image1, 0.25))
-image2 = util.img_as_ubyte(transform.rescale(image2, 0.25))
-
-showImage(image1, 8, 8)
+# =============================================================================
+# """
+# if images are LARGE then rescale to make a quicker test
+# - used for the drone images, else uncomment the two lines!
+# """
+# 
+# image1 = util.img_as_ubyte(transform.rescale(image1, 0.25))
+# image2 = util.img_as_ubyte(transform.rescale(image2, 0.25))
+# 
+# showImage(image1, 8, 8)
+# =============================================================================
 
 
 #%% ================ POINT COORESPONDENCES USING SIFT =========================
@@ -77,9 +79,11 @@ dst_pts = np.float32([keypoints1[m.trainIdx].pt for m in matches]).reshape(-1, 1
 
 # Our own function   
 H1, no_inliers = getRansacHomography(src_pts, dst_pts, 5.0)
+print(H1)
 
 # The inbuild function from openCV
 H2, mask = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, 5.0)
+print(H2)
 
 # Prints the estimated points for H1 and H2
 print("Estimated points using the two different H functions.")

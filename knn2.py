@@ -179,6 +179,7 @@ for img in range(0, imageCount):
                     matches.append( { 'featureIdx' : featureIdx, 'matchIdx' : indices[0][i] })
                     #print("i: ", i)
                     i = neighbors
+                    #print(len(matches))
                     #print("debug 2")
                 i=i+1
                     
@@ -217,7 +218,7 @@ for img in range(0, imageCount):
             H_temp.append(H)
         else:
             print("Not validated match for img, imgMatch: ", img, imgMatch)
-            H_temp.append(None)
+            H_temp.append(H)
             #continue  
         
     H_all.append(H_temp)
@@ -404,10 +405,14 @@ cnt = contours[0]
 x,y,w,h = cv2.boundingRect(cnt)
 crop = canvas[y:y+h,x:x+w]
 
-# plt.figure()
-# plt.imshow(canvas)
-
+canvas = canvas.astype(dtype=np.uint8)
 plt.figure()
+plt.imshow(canvas)
+
+
+crop = crop.astype(dtype=np.uint8)
+
+plt.figure(figsize = (12,12))
 plt.imshow(crop)
 
 # plt.figure()
@@ -416,8 +421,10 @@ plt.imshow(crop)
 
 #%%
 
-filename = 'savedImage.jpg'
-cv2.imwrite(filename, crop)
+# =============================================================================
+# filename = 'savedImage.jpg'
+# cv2.imwrite(filename, crop)
+# =============================================================================
 
 # for im in comparison:
 #     plt.imshow(im)

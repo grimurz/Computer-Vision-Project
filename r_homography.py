@@ -2,6 +2,8 @@ import numpy as np
 import random
 import math
 from scipy.stats import binom
+from sklearn.preprocessing import normalize
+
 
 def getPointsFromHomogeneousCoor(q):
     
@@ -63,6 +65,7 @@ def getHomography (points1, points2):
     
     # third try with Google..
     for p1, p2 in zip(points1, points2): 
+        
         x1, y1, x2, y2, = p1[0], p1[1], p2[0], p2[1]
     
         # build B matrix of b-vectors for the matching points
