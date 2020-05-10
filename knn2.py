@@ -196,7 +196,7 @@ for img in range(0, imageCount):
 
         if len(matches) > 8:           # <- ATTN!
         
-            # H2, mask = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, 5.0)           # <- ATTN!
+            # H, mask = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, 5.0)           # <- ATTN!
             # no_inliers = np.sum(mask) 
             H, no_inliers = getRansacHomography(src_pts, dst_pts, 5.0)
             
