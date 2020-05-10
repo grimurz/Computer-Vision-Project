@@ -55,9 +55,9 @@ def isValidMatch(nf, ni):
 
 
 
-scaleImages = True
+scaleImages = False
 images = []
-path = "testimages10"
+path = "final_images/simple_stitching_twisted"
 for f in os.listdir(path):
     ext = os.path.splitext(f)[1]
     if ext != ".png":
@@ -368,7 +368,7 @@ canvas = np.zeros((c_h, c_w, 3)).astype(int)
 # [ 1 2 3 | 4 | 5 6 7] - > [ 7 6 5 | 1 2 3 | 4 ]
 rend_order = np.arange(len(images))
 ro_A = rend_order[0:anchor_id]
-ro_B = np.flip(rend_order[anchor_id+1:])
+ro_B = np.flip(rend_order[anchor_id+1:], axis=0)
 rend_order_nu = np.concatenate((ro_B, ro_A, [anchor_id]), axis=0)
 
 # for i, im in enumerate(images):
