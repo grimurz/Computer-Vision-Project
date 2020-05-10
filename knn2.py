@@ -57,7 +57,7 @@ def isValidMatch(nf, ni):
 
 scaleImages = True
 images = []
-path = "testimages9"
+path = "testimages10"
 for f in os.listdir(path):
     ext = os.path.splitext(f)[1]
     if ext != ".png":
@@ -71,7 +71,7 @@ imageCount = len(images)
 if scaleImages:
     print('[INFO scaling images')
     for i in range(len(images)):
-        scale_percent = 40 # percent of original size
+        scale_percent = 30 # percent of original size
         width = int(images[i].shape[1] * scale_percent / 100)
         height = int(images[i].shape[0] * scale_percent / 100)
         dim = (width, height)
@@ -146,6 +146,9 @@ print("[INFO] Best matching done")
 
 H_all = []
 
+# comparison = []
+
+
 # (i) Select m candidate matching images that have the most feature matches to this image
 for img in range(0, imageCount):
     
@@ -183,6 +186,12 @@ for img in range(0, imageCount):
         # (ii) Find geometrically consistent feature matches using RANSAC to solve for the homography between pairs of images
         src_pts = np.float32([keypoints[img][m['featureIdx']].pt for m in matches]).reshape(-1, 1, 2)
         dst_pts = np.float32([keypoints[imgMatch][m['matchIdx']].pt for m in matches]).reshape(-1, 1, 2)
+
+
+        # # TEST TEST
+        # comparison.append( cv2.drawMatches(images[img], keypoints[img], images[imgMatch], keypoints[imgMatch], matches, None, flags=2) )
+
+
 
         if len(matches) > 8:           # <- ATTN!
         
@@ -289,8 +298,8 @@ else:
 #%%
 
 # # Output: Panoramic image(s)
-# h = 550
-# w = 550
+# h = 650
+# w = 650
 # s = 0 # shift
 
 # for i in range(len(images)):
@@ -399,3 +408,6 @@ plt.imshow(crop)
 
 filename = 'savedImage.jpg'
 cv2.imwrite(filename, crop)
+
+# for im in comparison:
+#     plt.imshow(im)
