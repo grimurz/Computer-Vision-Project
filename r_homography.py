@@ -87,7 +87,7 @@ def getRansacHomography(p_1, p_2, valid_error):
         points2.append(p_2[i][0])
         
     # constants from the paper
-    n = 10000    # should be 500, but chanced to 1000 to get better fit 
+    n = 5000    # should be 500, but chanced to 1000 to get better fit 
     r = 8       # should be 4, but changed to 8 to get better fit
                 # maybe these should just be tuned  at the end?
     
