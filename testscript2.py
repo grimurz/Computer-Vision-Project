@@ -34,16 +34,16 @@ def showImage(im, h, w):
 # read images from path
 # chance path and extention according to the images and type of images you want to test 
 images = []
-path = "final_images/simple_stitching_twisted"
+path = "testimages1"
 
 for f in os.listdir(path):
     ext = os.path.splitext(f)[1]
-    if ext != ".png":
+    if ext != ".JPG":
         continue
     images.append(cv2.imread(os.path.join(path,f)))
     
-image1 = images[0]
-image2 = images[3]
+image1 = images[1]
+image2 = images[0]
 
 showImage(image1, 8, 8)
 showImage(image2, 8, 8)
