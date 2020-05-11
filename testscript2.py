@@ -27,14 +27,14 @@ from warp import warpImageBasic, warpImage
 
 def showImage(im, h, w):
     plt.figure(figsize = (h,w))
-    plt.imshow(im)
+    plt.imshow(cv2.cvtColor(im, cv2.COLOR_BGR2RGB))
     plt.show 
 
 #%% ===================== INITIAL IMAGE LOADING ===============================
 # read images from path
 # chance path and extention according to the images and type of images you want to test 
 images = []
-path = "testimages6"
+path = "final_images/simple_stitching_twisted"
 
 for f in os.listdir(path):
     ext = os.path.splitext(f)[1]
@@ -43,7 +43,10 @@ for f in os.listdir(path):
     images.append(cv2.imread(os.path.join(path,f)))
     
 image1 = images[0]
-image2 = images[1]
+image2 = images[3]
+
+showImage(image1, 8, 8)
+showImage(image2, 8, 8)
 
 #%% ===================== RESCALE OF IMAGES ===================================
 # =============================================================================
@@ -69,11 +72,13 @@ knnmatcher = cv2.BFMatcher(cv2.NORM_L2, crossCheck = False)
 raw = knnmatcher.knnMatch(descriptors0, descriptors1, 2)
 matches = []
 for m,n in raw:
-    if m.distance < n.distance * 0.7:
+    if m.distance < n.distance * 0.5:
         matches.append(m)
 src_pts = np.float32([keypoints0[m.queryIdx].pt for m in matches]).reshape(-1, 1, 2)
 dst_pts = np.float32([keypoints1[m.trainIdx].pt for m in matches]).reshape(-1, 1, 2)
 
+images_matches = cv2.drawMatches(image1,keypoints0,image2,keypoints1,matches, None, flags=2)
+showImage(images_matches, 15, 10)
 
 #%% =============== TEST OF RANSAC HOMOGRAPHY ESTIMATION ======================
 

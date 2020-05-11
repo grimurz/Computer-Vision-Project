@@ -54,10 +54,9 @@ def isValidMatch(nf, ni):
 
 
 
-
 scaleImages = False
 images = []
-path = "final_images/simple_stitching_twisted"
+path = "final_images/simple_stitching"
 for f in os.listdir(path):
     ext = os.path.splitext(f)[1]
     if ext != ".png":
@@ -413,7 +412,7 @@ plt.imshow(canvas)
 crop = crop.astype(dtype=np.uint8)
 
 plt.figure(figsize = (12,12))
-plt.imshow(crop)
+plt.imshow(cv2.cvtColor(crop, cv2.COLOR_BGR2RGB))
 
 # plt.figure()
 # plt.imshow(cv2.imread('mountain.png'))
