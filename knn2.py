@@ -70,7 +70,7 @@ imageCount = len(images)
 if scaleImages:
     print('[INFO scaling images')
     for i in range(len(images)):
-        scale_percent = 30 # percent of original size
+        scale_percent = 60 # percent of original size
         width = int(images[i].shape[1] * scale_percent / 100)
         height = int(images[i].shape[0] * scale_percent / 100)
         dim = (width, height)
